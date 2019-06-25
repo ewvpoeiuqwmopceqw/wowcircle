@@ -1,0 +1,101 @@
+/*
+ * Dialog: Change account type
+ */
+
+Ext.require([
+    'wowPortal.model.AccountTypes'
+]);
+
+Ext.define('wowPortal.module.dialog.ChangeAccountType', {
+    extend: 'Ext.Window',
+
+    models: ['wowPortal.model.AccountTypes'],
+
+    width: 350,
+    autoHeight: true,
+    modal: true,
+    resizable: false,
+
+    title: wowPortal.locale.MODULE_MANAGE_CHANGE_ACCOUNT_TYPE_TITLE,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                items: [{
+                    xtype: 'combobox',
+                    forceSelection: true,
+                    editable: false,
+                    labelWidth: 100,
+                    anchor: '100%',
+                    itemId: 'type',
+                    //value: parseInt(this.typeId),
+                    queryMode: 'local',
+                    displayField: 'name',
+                    valueField: 'id',
+                    allowBlank: false,
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_ACCOUNT_TYPES_LABEL,
+                    store: {
+                        type: 'direct',
+                        model: 'wowPortal.model.AccountTypes',
+                        remoteSort: false,
+                        autoLoad: true,
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }],
+                        directFn: wowPortal.wow_Services.cmdGetAccountTypeList,
+                        listeners: {
+                            scope: this,
+                            beforeload: function(store, operation) {
+                                this.setLoading(true);
+                            },
+                            load: function(store, record, successfull) {
+                                /*var rec = this.__typeField.findRecordByDisplay(this.type);
+                                if (rec) {
+                                    this.__typeField.setValue(rec.get('id'));
+                                } else {
+                                    this.__typeField.setValue(this.__typeField.getStore().first().get('id'))
+                                }*/
+                                this.setLoading(false);
+                                this.__typeField.setValue(parseInt(this.typeId));
+                            }
+                        }
+                    }
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__okButton.setDisabled(!valid);
+                    }
+                }
+            }], 
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                disabled: true,
+                handler: function() {
+                    var id = this.__typeField.getValue();
+                    var rec = this.__typeField.findRecordByValue(id);
+                    this.callback.call(this.callbackScope|| window, id);
+                    this.close();
+                }
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__form = this.items.get('form');
+        this.__okButton = this.down('#ok');
+
+        this.__typeField = this.down('#type');
+        this.on('afterrender', function() {this.setLoading(true);});
+    }
+});

@@ -1,0 +1,131 @@
+Ext.define('wowPortal.module.Payment', {
+    extend: 'wowPortal.module.Common',
+
+    //layout: 'fit',
+
+    initComponent: function() {
+        var items = [];
+        
+        var paymentwall = {
+            xtype: 'panel',
+            itemId: 'payment-wall-oplata',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_PAYMENT_WALL_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/paymentwall.htm'
+            }
+        };
+		
+		var inter = {
+            xtype: 'panel',
+            itemId: 'inter',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_INTER_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/inter.htm'
+            }
+        };
+        
+        var robo = {
+            xtype: 'panel',
+            itemId: 'robox',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_ROBOX_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/robox.htm'
+            }
+        };
+        
+        var sms = {
+            xtype: 'panel',
+            itemId: 'sms-panel',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_SMS_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/sms.htm?simple=2'
+            },
+            listeners: {
+                scope: this,
+                show: {
+                    fn: function(panel, opts) {
+                        //panel.loader.load();
+                    },
+                    single: true
+                },
+                afterrender: function(panel, opts) {
+                }
+            }
+        };
+        
+        var sms_oplata = {
+            xtype: 'panel',
+            itemId: 'sms-panel-oplata',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_SMS_RUS_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/sms_oplata.htm'
+            }
+        };
+
+        var unitpay = {
+            xtype: 'panel',
+            itemId: 'panel-unitpay',
+            autoScroll: true,
+            autoHeight: true,
+            title: wowPortal.locale.MODULE_PAYMENT_UNITPAY_TITLE,
+            loader: {
+                loadMask: true,
+                autoLoad: true,
+                renderer: 'html',
+                url: '/unitpay.htm'
+            }
+        };
+
+        if (LANGUAGE == 'ru-ru') 
+        {
+            //items.push(robo);
+            items.push(unitpay);
+            items.push(inter);
+            items.push(sms);
+            items.push(sms_oplata);
+            //items.push(paymentwall);
+        } else {
+            items.push(paymentwall);
+            items.push(sms);
+        }
+
+        Ext.apply(this, {
+            items: {
+                xtype: 'tabpanel',
+                cls: 'tab-panel-zero-top',
+                autoHeight: true,
+                autoScroll: true,
+                items: items
+            }
+        });
+
+        this.callParent(arguments);
+
+        this.__smsPanel = this.down('#sms-panel');
+    }
+});

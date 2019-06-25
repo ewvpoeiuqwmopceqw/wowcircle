@@ -1,0 +1,26 @@
+/*
+ * Model: Characters
+ */
+
+Ext.define('wowPortal.model.Characters', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        {type: 'string',  name: 'guid'},
+        {type: 'string',  name: 'name'},
+        {type: 'integer', name: 'race'},
+        {type: 'integer', name: 'class'},
+        {type: 'string',  name: 'totaltime'},
+        {type: 'integer', name: 'logout_time'},
+        {type: 'integer', name: 'level'},
+        {type: 'integer', name: 'money'},
+        {type: 'string',  name: 'guild_name'},
+        {type: 'integer', name: 'gender'},
+        {type: 'integer', name: 'bandate'},
+        {type: 'integer', name: 'unbandate'},
+        {type: 'string',  name: 'bannedby'},
+        {type: 'string',  name: 'banreason'},
+        {type: 'integer', name: 'active'},
+        {type: 'integer', name: 'faction'}
+    ]
+});

@@ -1,0 +1,21 @@
+/*
+ * Model: Bonuses
+ */
+
+Ext.define('wowPortal.model.Bonuses', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fkey',
+        'fclass',
+        'finList',
+        'fname',
+        'fDescription',
+        'fbonus',
+        'fenable',
+        'fneedChar',
+        'fallowedforban',
+        'fexternalPrice',
+        'fscope'
+    ]
+});

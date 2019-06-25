@@ -1,0 +1,13 @@
+/*
+ * Model: Countries
+ */
+
+Ext.define('wowPortal.model.Countries', {
+    extend: 'Ext.data.Model',
+    idProperty: 'id',
+    fields: [
+        {type: 'string', name: 'id'},
+        {type: 'string', name: 'country'},
+        {type: 'boolean', name: 'selected'}
+    ]
+});

@@ -1,0 +1,15 @@
+/*
+ * Model: Character Titles
+ */
+
+Ext.define('wowPortal.model.Titles', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fkey',
+        'fnameM',
+        'fnameW',
+        'fBitIndex',
+        'price'
+    ]
+});

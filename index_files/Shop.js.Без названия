@@ -1,0 +1,18 @@
+/*
+ * Module: Shop
+ */
+Ext.define('wowPortal.module.Shop', {
+    extend: 'wowPortal.module.CommonMarket',
+
+    isShop: true,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            itemsListDirectFn: wowPortal.wow_Services.cmdGetItemListByClass,
+            categoriesListDirectFn: wowPortal.wow_Services.cmdGetItemCategoryListShop,
+            buyFirectFn: wowPortal.wow_Services.cmdBuyItem
+        });
+
+        this.callParent(arguments);
+    }
+});

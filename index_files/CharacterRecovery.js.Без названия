@@ -1,0 +1,110 @@
+/*
+ * Module: Character Recovery
+ */
+
+Ext.require([
+    'wowPortal.model.CharactersForRecovery'
+]);
+
+Ext.define('wowPortal.module.CharacterRecovery', {
+    extend: 'wowPortal.module.Common',
+
+    layout: 'border',
+
+    models: ['wowPortal.model.CharactersForRecovery'],
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.Store', {
+            model: 'wowPortal.model.CharactersForRecovery',
+            proxy: {
+                type: 'direct',
+                directFn: wowPortal.wow_Services.cmdCharacterRecoveryList,
+                reader: {
+                    type: 'json',
+                    root: 'data',
+                    idProperty: 'fkey'
+                }
+            },
+            autoLoad: true
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    //renderer: function(value, metaData, record, colIndex, store, view) {
+                    //    var url = Ext.String.format('/wowarmory/character-sheet.xml?r={0}&cn={1}', wowPortal.data.realm, value);
+                    //    return '<a href="' + url + '" target="_blank">' + value + '</a>';
+                    //},
+                    flex: 1,
+                    dataIndex: 'name'
+                },{
+                    text: wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_LEVEL,
+                    width: 90,
+                    dataIndex: 'level'
+                },{
+                    text: wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_DELETE_TIME,
+                    width: 120,
+                    dataIndex: 'timestamp'
+                },{
+                    text: wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_PRICE,
+                    width: 90,
+                    dataIndex: 'price'
+                }/*, {
+                    xtype:'actioncolumn',
+                    align: 'center',
+                    width: 30,
+                    items: [{
+                        icon: '/images/button/basket.png',
+                        tooltip: wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_BUY,
+                        scope: this,
+                        handler: this.__onBuyCharacterClick
+                    }]
+                }*/],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.COMMON_CHARACTERS_GRID_EMPTY_MSG,
+                    listeners: {
+                        scope: this,
+                        itemdblclick: this.__onRowDoubleClick
+                    }
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+    },
+
+    __onRowDoubleClick: function(sm, rec) {
+        this.__recoveryCharacter(rec);
+    },
+
+    __onrecoveryCharacterClick: function(grid, rowIndex, colIndex) {
+        var rec = grid.getStore().getAt(rowIndex);
+        this.__recoveryCharacter(rec);
+    },
+
+    __recoveryCharacter: function(rec) {
+        Ext.Msg.confirm(wowPortal.locale.MODULE_CHARACTER_RECOVERY_CONFIRMATION_TITLE,
+            Ext.String.format(wowPortal.locale.MODULE_CHARACTER_RECOVERY_CONFIRMATION, rec.get('name')),
+            function(button) {
+                if (button == 'yes') {
+                    this.setLoading(true);
+                    wowPortal.wow_Services.cmdCharacterRecovery({guid: rec.get('guid')},
+                        function(response, provider) {
+                            this.setLoading(false);
+                            if('exception' === provider.type || true !== response) {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_CHARACTER_RECOVERY_RECOVERY_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                            } else {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_CHARACTER_RECOVERY_RECOVERY_SUCCESS);
+                            }
+                        }, this);
+                }
+            }, this);
+    }
+});

@@ -1,0 +1,17 @@
+/*
+ * Model: Items
+ */
+
+Ext.define('wowPortal.model.Items', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'class',
+        'entry',
+        'name',
+        'fprice',
+        'fcount',
+        'ItemLevel',
+        'RequiredLevel'
+    ]
+});

@@ -1,0 +1,11 @@
+Ext.define('wowPortal.module.TransferManual', {
+    extend: 'wowPortal.module.Common',
+    autoScroll: true,
+
+    loader: {
+        loadMask: true,
+        autoLoad: true,
+        renderer: 'html',
+        url: '/transmanual.htm?simple=2'
+    }           
+});

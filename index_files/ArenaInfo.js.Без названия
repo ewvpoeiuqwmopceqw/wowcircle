@@ -1,0 +1,24 @@
+Ext.define('wowPortal.module.ArenaInfo', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function(){
+        Ext.apply(this, {
+            items: {
+                xtype: 'tabpanel',
+                cls: 'tab-panel-zero-top',
+                items: [Ext.create('wowPortal.module.ArenaTeam', {
+                    arenaType: 2,
+                    title: wowPortal.locale.MODULE_ARENATEAM_TAB_NAME_2
+                }), Ext.create('wowPortal.module.ArenaTeam', {
+                    arenaType: 3,
+                    title: wowPortal.locale.MODULE_ARENATEAM_TAB_NAME_3
+                }), Ext.create('wowPortal.module.ArenaTeam', {
+                    arenaType: 5,
+                    title: wowPortal.locale.MODULE_ARENATEAM_TAB_NAME_5
+                })]
+            }
+        });
+
+        this.callParent(arguments);
+    }
+});

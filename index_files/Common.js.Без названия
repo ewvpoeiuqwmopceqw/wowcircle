@@ -1,0 +1,32 @@
+Ext.define('wowPortal.module.Common', {
+    extend: 'Ext.container.Container',
+    
+    border: 0,
+    layout: 'anchor'/*,
+    defaultJSPBinding: true,
+
+    initComponent: function() {
+        this.callParent(arguments);
+
+        if (this.defaultJSPBinding) {
+            this.on('afterrender', function(panel, opts) {
+                panel.doComponentLayoutOld = panel.doComponentLayout;
+                panel.doComponentLayout = function() {
+                    // remove scroll if it available
+                    if (this.api) {
+                        this.api.destroy();
+                        this.api = null;
+                    }
+
+                    console.log('before doComponentLayout');
+                    panel.doComponentLayoutOld.apply(this, arguments);
+                    console.log('after doComponentLayout');
+
+                    $(this.body.dom).jScrollPane({showArrows: true, autoReinitialise : true, autoReinitialiseDelay : 200});
+                    this.api = $(this.body.dom).data('jsp');
+                };
+
+            }, this);
+        }
+    }*/
+});

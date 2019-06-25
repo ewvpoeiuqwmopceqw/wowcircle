@@ -1,0 +1,17 @@
+/*
+ * Model: Account Log
+ */
+
+Ext.define('wowPortal.model.AccountLog', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fdate', 
+        'faccount', 
+        'f_server', 
+        'ftype', 
+        'fip', 
+        'fmessage', 
+        'fscopeId'
+    ]
+});

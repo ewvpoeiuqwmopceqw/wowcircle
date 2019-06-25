@@ -1,0 +1,122 @@
+/*
+ * Common module with iFrame
+ **/
+Ext.define('wowPortal.module.CommonIFrame', {
+    extend: 'wowPortal.module.Common',
+
+    frameSrc: null,
+    loadFrameAfter: 'render', // set source after show - 'show', or after render - 'render'
+    showLoading: false,
+    frameAutoHeight: true,
+    minAutoHeight: 400,
+    autoScroll: true,
+
+    __frameId: null,
+    __lastFrameHeight: 0,
+    __autoHeightTask: null,
+    __autoHeightEnabled: false,
+    __frame: null,
+
+    initComponent: function() {
+        this.__frameId = this.id + '-frame';
+        this.__lastFrameHeight = 0;
+        // pre initialize panel object
+        Ext.apply(this, {
+            listeners: {
+                scope: this
+            },
+            constrain:true,
+            html: '<iframe class="wow-frame" id="' + this.__frameId + '" width="100%" border="0" src=""></iframe>'
+        });
+
+        this.callParent(arguments);
+        this.__bindEvents();
+    },
+
+    __getFrame: function()
+    {
+        if(this.__frame != null) return this.__frame;
+        this.__frame = Ext.get(this.__frameId);
+        return this.__frame;
+    },
+    
+    __onFrameLoad: function() {
+        if(this.__getFrame() == null ) return;
+        this.__frame.dom.contentWindow.onunload = function() {
+            this.__autoHeightEnabled = false;
+        };
+
+
+        if (this.showLoading) {
+            this.setLoading(false);
+        }
+        this.__autoHeightEnabled = true;
+        this.__correctHeight();
+    },
+
+    __correctHeight: function() {
+        if(this.__getFrame() == null ) return;
+        if (!this.__autoHeightEnabled || !this.__frame.dom.contentWindow || typeof this.__frame.dom.contentWindow.$ != "function") {
+            return;
+        }
+
+        var height = this.__frame.dom.contentWindow.$('body').height();
+        height = Math.max(this.minAutoHeight, height);
+        if (height == this.__lastFrameHeight) {
+            return;
+        }
+        this.__lastFrameHeight = height;
+        this.__frame.setHeight(height);
+        this.ownerCt.doComponentLayout();
+        //this.setHeight(height);
+    },
+
+    __onShow: function(panel, opts) {
+        if (this.showLoading) {
+            panel.setLoading(true);
+        }
+        document.getElementById(this.__frameId).src = this.frameSrc;
+    },
+
+    __onAfterRender: function() {
+        if(this.__getFrame() == null ) return;
+        if ('render' == this.loadFrameAfter) {
+            document.getElementById(this.__frameId).src = this.frameSrc;
+        }
+        this.__frame.load({
+            url: this.frameSrc,
+            nocache: true,
+            timeout: 30,
+            scripts: true,
+            callback: Ext.Function.bind(this.__onFrameLoad, this)
+        });
+        //this.__frame.load(Ext.Function.bind(this.__onFrameLoad, this));
+
+        this.__autoHeightTask = {
+            run: this.__correctHeight,
+            scope: this,
+            interval: 1000
+        }
+        // run task after frame rendered
+        Ext.TaskManager.start(this.__autoHeightTask);
+    },
+
+    __bindEvents: function() {
+        if ('show' == this.loadFrameAfter) {
+            this.un('show', this.__onShow, this);
+            this.on('show', this.__onShow, this, { single: true });
+        };
+
+        if (this.frameAutoHeight) {
+            this.un('afterrender', this.__onAfterRender, this);
+            this.on('afterrender', this.__onAfterRender, this, { single: true });
+        };
+    },
+
+    reset: function() {
+        if (this.__frame) {
+            this.__frame.dom.src = '';
+            this.__bindEvents();
+        }
+    }
+});

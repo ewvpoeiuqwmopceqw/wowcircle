@@ -1,0 +1,132 @@
+/*
+ * Dialog: Common window for buy some thing
+ */
+
+Ext.require([
+    'wowPortal.model.Characters'
+]);
+
+Ext.define('wowPortal.module.dialog.CommonBuyWindow', {
+    extend: 'Ext.Window',
+
+    models: ['wowPortal.model.Characters'],
+
+    width: 600,
+    height: 400,
+    modal: true,
+    resizable: false,
+    layout: 'border',
+
+    __charactesGrid: null,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                itemId: 'characters-grid',
+                title: wowPortal.locale.COMMON_BUY_WINDOW_CHARACTERS_GRID_TITLE,
+                loadMask: true,
+                region: 'center',
+                store: {
+                    type: 'direct',
+                    model: 'wowPortal.model.Characters',
+                    remoteSort: false,
+                    autoLoad: true,
+                    sorters: [{
+                        property: 'name',
+                        direction: 'ASC'
+                    }],
+                    directFn: wowPortal.wow_Services.cmdGetCharactersList
+                },
+                columns: [{
+                    dataIndex: 'name',
+                    //renderer: function(value, metaData, record, colIndex, store, view) {
+                    //    var url = Ext.String.format('/wowarmory/character-sheet.xml?r={0}&cn={1}', wowPortal.data.realm, value);
+                    //    return '<a href="' + url + '" target="_blank">' + value + '</a>';
+                    //},
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    flex: 1
+                }, {
+                    dataIndex: 'faction',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+                    width: 60,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'race',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'class',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'level',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 55
+                }, {
+                    dataIndex: 'totaltime',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+                    width: 90
+                }],
+                viewConfig: {
+                    stripeRows: true
+                },
+                listeners: {
+                    scope: this,
+                    selectionchange: function(view, records) {
+                        this.__isValid();
+                    }
+                }
+            }],
+
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                disabled: true,
+                handler: this.__onOKClick
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__charactesGrid = this.items.get('characters-grid');
+        this.__okButton = this.down('#ok');
+    },
+
+    __onOKClick: function() {
+        if (this.__isValid()) {
+            // get selected character
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            this.close();
+            this.callback.call(this.callbackScope || window, selectedChars[0].get('guid'));
+        }
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            valid = !Ext.isEmpty(selectedChars);
+        }
+
+        this.__okButton.setDisabled(!valid);
+        return valid;
+    }
+});

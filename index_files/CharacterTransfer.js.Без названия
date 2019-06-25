@@ -1,0 +1,433 @@
+/*
+ * Module: Character transfer
+ */
+
+Ext.require([
+    'wowPortal.model.TransferingCharaters'
+]);
+
+Ext.define('wowPortal.module.CharacterTransfer', {
+    extend: 'wowPortal.module.Common',
+
+    autoScroll: true,
+    layout: 'anchor',
+
+    //frameSrc: '/account_transfer.htm'
+    __isInspector: false,
+    __transferConst: null,
+    __removeEnable: false,
+
+    initComponent: function() {
+        this.callParent();
+
+        this.on('afterrender', function(){
+            //this.setLoading(true);
+            wowPortal.viewport.maskTabPanel();
+            wowPortal.wow_Services.cmdCharacterTransferInfo(this.__onGetTransferInfo, this);
+        }, this);
+    },
+
+    __onGetTransferInfo: function(response, provider) {
+        //this.setLoading(false);
+        wowPortal.viewport.unmaskTabPanel();
+        if('exception' === provider.type) {
+            return;
+        }
+
+        this.__isInspector = response.isInspector;
+        this.__removeEnable = response.removeEnable;
+        this.__transferConst = {
+            ca: response.ca,
+            cd: response.cd,
+            ra: response.ra,
+            rd: response.rd
+        }
+
+        var columns = [{
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_NAME,
+            //flex: 1,
+            width: 150,
+            dataIndex: 'charname'
+        }, {
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_SOURCE_WORLD,
+            width: 120,
+            dataIndex: 'realmname'
+        }, {
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_REALM,
+            width: 120,
+            dataIndex: 'realmlist'
+        }, {
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_TARGET_WORLD,
+            width: 120,
+            dataIndex: 'toServer'
+        }, {
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_ACCOUNT,
+            width: 100,
+            dataIndex: 'acc_username'
+        }, {
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_STATE,
+            width: 100,
+            dataIndex: 'status'
+        }];
+
+        var plugins = null;
+        if (this.__isInspector) {
+            plugins = [{
+                ptype: 'rowexpander',
+                rowBodyTpl : [
+                    '<div style="padding: 0 5px;"><textarea style="padding: 0 5px; height:80px; width:400px;">' + wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_CREATION_TIME + ": {creationtime}\n",
+                    '' + wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGN_ACCOUNT + ": {foreign_account}\n",
+                    '' + wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGHN_PASSWORD + ": {foreign_password}\n",
+                    '{realmname}\n{realmlist}</textarea></div>'
+                ]
+            }];
+            // for inspectors
+            /*columns = columns.concat([{
+                text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_CREATION_TIME,
+                width: 120,
+                dataIndex: 'creationtime'
+            }, {
+                text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGN_ACCOUNT,
+                width: 100,
+                dataIndex: 'foreign_account'
+            }, {
+                text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGHN_PASSWORD,
+                width: 100,
+                dataIndex: 'foreign_password'
+            }]);*/
+        }
+        
+        var actionItemRenderer = function(fieldName) {
+            return function(value, meta, record, rowIx, ColIx, store) {
+                return record.get(fieldName) ? 'x-grid-center-icon': 'x-hide-display';
+            }
+        };
+
+        var actionItemClick = function(action) {
+            return function(grid, rowIndex, colIndex) {
+                //action in (hide|delete|reload|cancel|inspect|abort|confirm|reject|transfer)
+                var record = grid.getStore().getAt(rowIndex);
+                //this.setLoading(true);
+                wowPortal.viewport.maskTabPanel();
+                wowPortal.wow_Services.cmdCharacterTransferAction({
+                    action: action,
+                    hash: record.get('hash')
+                }, this.__onActionResult, this);
+            }
+        };
+
+        columns = columns.concat({
+            xtype: 'actioncolumn',
+            text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_ACTIONS,
+            //width: 100,
+            items: [{
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_HIDE,
+                getClass: actionItemRenderer('Actions_Hide'),
+                scope: this,
+                handler: actionItemClick('hide')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_DELETE,
+                getClass: actionItemRenderer('Actions_Delete'),
+                scope: this,
+                handler: actionItemClick('delete')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_RELOAD,
+                getClass: actionItemRenderer('Actions_Reload'),
+                scope: this,
+                handler: actionItemClick('reload')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_ABORT,
+                getClass: actionItemRenderer('Actions_Abort'),
+                scope: this,
+                handler: actionItemClick('abort')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CANCEL,
+                getClass: actionItemRenderer('Actions_Cancel'),
+                scope: this,
+                handler: actionItemClick('cancel')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CONFIRM,
+                getClass: actionItemRenderer('Actions_Confirm'),
+                scope: this,
+                handler: actionItemClick('confirm')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CREATE,
+                getClass: actionItemRenderer('Actions_Create'),
+                scope: this,
+                handler: actionItemClick('create')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_INSPECT,
+                getClass: actionItemRenderer('Actions_Inspect'),
+                scope: this,
+                handler: actionItemClick('inspect')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_REJECT,
+                getClass: actionItemRenderer('Actions_Reject'),
+                scope: this,
+                handler: actionItemClick('reject')
+            }, {
+                icon: '/images/button/basket.png',
+                tooltip: wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_TRANSFER,
+                getClass: actionItemRenderer('Actions_Transfer'),
+                scope: this,
+                handler: actionItemClick('transfer')
+            }]
+        });
+
+        this.add([{
+            title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_INTRO_TITLE,
+            html: wowPortal.locale.MODULE_CHARACTER_TRANSFER_INTRO_TEXT
+        }, {
+            xtype: 'container',
+            anchor: '100%',
+            layout: 'column',
+            items: [this.__uploadForm = Ext.create('Ext.form.Panel', {
+                columnWidth: 0.5,
+                height: 230,
+                title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_TITLE,
+                //xtype: 'form',
+                bodyPadding: 5,
+                defaults: {
+                    labelWidth: 150
+                },
+                items: [{
+                    xtype: 'box',
+                    html: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_HINT
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_LABEL,
+                    defaultType: 'radiofield',
+                    defaults: {
+                        name: 'dump-operation',
+                        flex: 1
+                    },
+                    layout: 'hbox',
+                    items: [{
+                        boxLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_OPTION_COPY,
+                        checked: true,
+                        inputValue: 'Copy',
+                        name: 'action',
+                        itemId: 'upload-operation-copy'
+                    }, {
+                        boxLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_OPTION_MOVE,
+                        inputValue: 'Remove',
+                        name: 'action',
+                        itemId: 'upload-operation-move'
+                    }]
+                }, {
+                    xtype: 'textfield',
+                    name: 'account',
+                    itemId: 'upload-login',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_LOGIN_LABEL,
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'upload-password',
+                    name: 'password',
+                    inputType: 'password',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_PASSWORD_LABEL,
+                    allowBlank: false
+                }, {
+                    xtype: 'filefield',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_LABEL,
+                    name: 'file',
+                    //msgTarget: 'side',
+                    allowBlank: false,
+                    anchor: '100%',
+                    buttonText: '&uarr;'//wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_BUTTON
+                }, {
+                    xtype: 'box',
+                    html: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_HINT
+                }],
+                buttons: [{
+                    itemId: 'upload-btn',
+                    disabled: true,
+                    text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_UPLOAD_BUTTON,
+                    scope: this,
+                    handler: function(button) {
+                        this.setLoading(true);
+                        if (this.__uploadForm.getForm().isValid()) {
+                            this.__uploadForm.getForm().submit({
+                                params: {
+                                },
+                                scope: this,
+                                success: function(form, action) {
+                                    this.setLoading(false); 
+                                    this.__charactersGrid.getStore().load();
+                                },
+                                failure: function(form, action) {
+                                    this.setLoading(false); 
+                                    this.__charactersGrid.getStore().load();
+                                }
+                            });
+                        }
+                    }
+                }],
+                api: {
+                    // The server-side method to call for load() requests
+                    //load: wowPortal.wow_Services.cmdCharDumpLoad,
+                    // The server-side must mark the submit handler as a 'formHandler'
+                    submit: wowPortal.wow_Services.cmdCharacterTransferUpload
+                },
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__uploadButton.setDisabled(!valid);
+                    }
+                }
+            }), {
+                columnWidth: 0.5,
+                bodyPadding: 5,
+                height: 230,
+                title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_TITLE,
+                xtype: 'form',
+                defaults: {
+                    labelWidth: 140
+                },
+                items: [{
+                    xtype: 'fieldcontainer',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_LABEL,
+                    defaultType: 'radiofield',
+                    defaults: {
+                        name: 'calc-operation',
+                        flex: 1
+                    },
+                    layout: 'hbox',
+                    items: [{
+                        boxLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_OPTION_COPY,
+                        checked: true,
+                        inputValue: 'copy',
+                        itemId: 'calc-operation-copy'
+                    }, {
+                        boxLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_OPTION_MOVE,
+                        inputValue: 'move',
+                        itemId: 'calc-operation-move'
+                    }]
+                }, {
+                    xtype: 'numberfield',
+                    itemId: 'calc-level',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_LEVEL_LABEL,
+                    minValue: 0,
+                    maxValue: 85,
+                    value: 0,
+                    listeners: {
+                        scope: this,
+                        change: function(field, newValue, oldValue, eOpts) {
+                            var a, d;
+                            if (this.__calculationOpCopy.getValue()) {
+                                a = this.__transferConst['ca'];
+                                d = this.__transferConst['cd'];
+                            } else {
+                                a = this.__transferConst['ra'];
+                                d = this.__transferConst['rd'];
+                            }
+                            var cost = Math.round((newValue * (2 * a + d * (newValue - 1))) / 2);
+                            this.__calculationCost.setValue(cost);
+                        }
+                    }
+                }, {
+                    xtype: 'displayfield',
+                    itemId: 'calc-cost',
+                    fieldLabel: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_COST_LABEL,
+                    value: '-'
+                }]
+            }]
+        }, {
+            collapsible: true,
+            title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_TITLE,
+            items: [/*{
+                xtype: 'button',
+                text: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_DETAILS_BUTTON,
+                scope: this,
+                handler: function(button) {
+                    // TODO it is the bad way
+                    wowPortal.viewport.__openTab('wowPortal.module.TransferManual', wowPortal.locale.MAIN_PAGE_MENU_CHAR_TRANSFER);
+                }
+            }, */{
+                xtype: 'box',
+                html: wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_TEXT
+            }]
+        }, {
+            title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_GRID_TITLE,
+            itemId: 'character-grid',
+            xtype: 'gridpanel',
+            anchor: '100%',
+            height: 300,
+            store: Ext.create('Ext.data.DirectStore', {
+                model: 'wowPortal.model.TransferingCharaters',
+                autoLoad: true,
+                root: 'data',
+                idProperty: 'hash',
+                sorters: [{
+                    property: 'creationtime',
+                    direction: 'DESC'
+                }],
+                directFn: wowPortal.wow_Services.cmdCharacterTransferList
+            }),
+            listeners: {
+                scope: this,
+                selectionchange: function(selModel, selected, eOpts) {
+                    //if (0 == selected.length) {
+                    //    this.__inspectCreationTimeField.setValue('');
+                    //    this.__inspectForeigAccountField.setValue('');
+                    //    this.__inspectForeigPasswordField.setValue('');
+                    //} else {
+                    //    if(this.__isInspector)
+                    //    {
+                    //        this.__inspectCreationTimeField.setValue(selected[0].get('creationtime'));
+                    //        this.__inspectForeigAccountField.setValue(selected[0].get('foreign_account'));
+                    //        this.__inspectForeigPasswordField.setValue(selected[0].get('foreign_password'));
+                    //    }
+                    //}
+                }
+            },
+            loadMask: true,
+            columns: columns,
+            plugins: plugins,
+
+            viewConfig: {
+                stripeRows: true,
+                emptyText: wowPortal.locale.MODULE_CHARACTER_TRANSFER_EMPTY_MSG
+            }
+        }, {
+            collapsible: true,
+            collapsed: true,
+            title: wowPortal.locale.MODULE_CHARACTER_TRANSFER_LEGEND_TITLE,
+            html: wowPortal.locale.MODULE_CHARACTER_TRANSFER_LEGEND_TEXT
+        }]);
+
+        this.__calculationLevel = this.down('#calc-level');
+        this.__calculationOpCopy = this.down('#calc-operation-copy');
+        this.__calculationCost = this.down('#calc-cost');
+        this.__charactersGrid = this.down('#character-grid');
+        this.__uploadButton = this.down('#upload-btn');
+        
+//        this.__inspectCreationTimeField = this.down('#inspect-creation-time');
+//        this.__inspectForeigAccountField = this.down('#inspect-foreign-account');
+//        this.__inspectForeigPasswordField = this.down('#inspect-foreign-password');
+
+        //this.__charactersGrid.getStore().load();
+    },
+
+    __onActionResult: function(response, provider) {
+        //this.setLoading(false);
+        wowPortal.viewport.unmaskTabPanel();
+        this.__charactersGrid.getStore().load();
+
+        //console.log(response);
+        if('exception' === provider.type || true !== response.success) {
+            return;
+        } else {
+            Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+        }
+    }
+});

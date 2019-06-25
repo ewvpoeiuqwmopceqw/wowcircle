@@ -1,0 +1,110 @@
+Ext.require([
+    'wowPortal.model.CharacterSnapshotsList'
+]);
+
+Ext.define('wowPortal.module.CharacterSnapshotsList', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.CharacterSnapshotsList',
+            autoLoad: true,
+            remoteSort: true,
+            remoteFilter: true,
+            sorters: [{
+                property : 'fdate',
+                direction: 'DESC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdCharacterSnapshotList,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_HEADER_SERVER,
+                    flex: 1,
+                    dataIndex: 'fservername',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_HEADER_ACCOUNT,
+                    width: 80,
+                    dataIndex: 'f_account',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_HEADER_CHARID,
+                    width: 80,
+                    dataIndex: 'f_character',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_HEADER_CHARNAME,
+                    flex: 2,
+                    dataIndex: 'fcharname',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_HEADER_DATE,
+                    width: 120,
+                    dataIndex: 'fdate'
+                }],
+                listeners: {
+                    scope: this,
+                    itemdblclick: this.__onCharacterRowDblClick
+                },
+                
+                plugins: [Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_BAN_LIST_EMPTY_MSG
+                },
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_BAN_LIST_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_BAN_LIST_EMPTY_MSG
+                })
+            }]
+        });
+        this.callParent(arguments);
+    },
+    
+    __onCharacterRowDblClick: function(sm, record) {
+        var name = record.get('fcharname');
+        var _id = record.get('fkey');
+        var title = Ext.String.format(wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_PROMPT_TITLE, name);
+        Ext.Msg.confirm(title, wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_PROMPT, function(btn) {
+            if (btn == 'yes') {
+                this.setLoading(true);
+                wowPortal.wow_Services.cmdCharacterSnapshotRecovery({snapshot_id: _id},
+                    function(responce) {
+                        this.setLoading(false);
+                        if (responce) {
+                            Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, responce.msg);
+                            //this.__refreshGeneralInfo();
+                        }
+                    }, this);
+            }
+            }, this);
+    }
+});

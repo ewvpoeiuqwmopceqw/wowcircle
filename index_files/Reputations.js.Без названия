@@ -1,0 +1,16 @@
+/*
+ * Model: Character Professions
+ */
+
+Ext.define('wowPortal.model.Reputations', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fkey',
+        'f_faction',
+        'f_32',
+        'f_team',
+        'fprice',
+        'fstanding'
+    ]
+});

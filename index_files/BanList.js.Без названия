@@ -1,0 +1,100 @@
+Ext.require([
+    'wowPortal.model.BannedAccounts'
+]);
+
+Ext.define('wowPortal.module.BanList', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.BannedAccounts',
+            autoLoad: true,
+            remoteSort: true,
+            remoteFilter: true,
+            sorters: [{
+                property : 'bandate',
+                direction: 'DESC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdGetBannedList,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_BAN_LIST_HEADER_NAME,
+                    flex: 1,
+                    dataIndex: 'username',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_REASON,
+                    flex: 1,
+                    dataIndex: 'banreason',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_FROM,
+                    width: 120,
+                    dataIndex: 'bandate'/*,
+                    filter: {/
+                        xtype: 'textfield'
+                    }*/,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return value;
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_TO,
+                    width: 120,
+                    dataIndex: 'unbandate'/*,
+                    filter: {
+                        xtype: 'textfield'
+                    }*/,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        if(record.get('unbandate') == 0)
+                            return wowPortal.locale.MODULE_BAN_LIST_PERMANENT;
+                        return value;
+                    }
+                    
+                }, {
+                    text: wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_AUTHOR,
+                    width: 140,
+                    dataIndex: 'bannedby',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }],
+
+                plugins: [Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_BAN_LIST_EMPTY_MSG
+                },
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_BAN_LIST_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_BAN_LIST_EMPTY_MSG
+                })
+            }]
+        });
+
+        this.callParent(arguments);
+    }
+});

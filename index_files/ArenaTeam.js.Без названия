@@ -1,0 +1,196 @@
+/*
+ * Module: Arena Team class
+ */
+
+Ext.require([
+    'wowPortal.model.ArenaTeamStatistics',
+    'wowPortal.model.ArenaTeamMembers'
+]);
+
+Ext.define('wowPortal.module.ArenaTeam', {
+    extend: 'wowPortal.module.Common',
+
+    models: ['wowPortal.model.ArenaTeamStatistics', 'wowPortal.model.ArenaTeamMembers'],
+    minHeight: 600,
+    layout: 'anchor',
+    defaults: {
+        anchor: '100%'
+    },    
+    __itemCategoriesGrid: null,
+    __itemsGrid: null,
+
+    initComponent: function() {
+        this.__teamStore = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.ArenaTeamStatistics',
+            remoteSort: true,
+            remoteFilter: true,
+            autoLoad: true,
+            pageSize: 20,
+            buffered: true,
+            sorters: [{
+                property: 'rating',
+                direction: 'DESC'
+            }],
+            proxy:{
+                directFn: wowPortal.wow_Services.cmdArenaTeamStatistics,
+                type: 'direct',
+                root: 'data',
+                idProperty: 'arenaTeamId',
+                totalProperty: 'total',
+                extraParams: {
+                    filter: [{
+                        property: 'type',
+                        value: this.arenaType
+                    }]
+                },
+                baseParams: {limit: 20},
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'arenaTeamId',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        this.__itemsStore = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.ArenaTeamMembers',
+            remoteFilter: true,
+            remoteSort: true,
+            autoLoad: false,
+            sorters: [{
+                property: 'personalRating',
+                direction: 'DESC'
+            }],
+            pageSize: 20,
+            baseParams: {limit: 20},
+            buffered: true,
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdArenaTeamMembers,
+                type: 'direct',
+                root: 'data',
+                idProperty: 'guid',
+                totalProperty: 'total',
+                baseParams: {limit: 20},
+                extraParams: {
+                    'arenaId': 0
+                },
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'guid',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        Ext.apply(this, {
+            xtype: 'container',
+            autoEl: 'div',
+            
+            items: [
+                this.__itemCategoriesGrid = Ext.create('Ext.grid.GridPanel', {
+                    loadMask: true,
+                    minHeight: 400,
+                    autoHeight: true,
+                    store: this.__teamStore,
+                    columns: [
+                        {dataIndex: 'rank',width: 40 , text: wowPortal.locale.MODULE_ARENATEAM_HEADER_RANK},
+                        //{dataIndex: 'charName', flex: 1, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_LEADERNAME},
+                        {dataIndex: 'name',flex: 1, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_TEAMNAME, renderer: Ext.util.Format.htmlEncode},
+                        {dataIndex: 'rating',width: 60, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_RATING},
+                        {dataIndex: 'seasonGames',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONGAMES},
+                        {dataIndex: 'seasonWins',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONWINS},
+                        {dataIndex: 'seasonLose',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONLOSE}/*,
+                        {dataIndex: 'weekGames',width: 100, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_WEEKGAMES},
+                        {dataIndex: 'weekWins',flex: 1, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_WEEKWINS}*/
+                    ],
+                    plugins: [this.__itemsHeaderFilters = Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+                    listeners: {
+                        scope: this,
+                        selectionchange: function(view, records) {
+                            if (!Ext.isEmpty(records)) {
+                                this.__itemsGrid.getStore().getProxy().extraParams['arenaId'] = records[0].data.arenaTeamId;
+                                this.__itemsGrid.getStore().load();
+                            }
+                        }
+                    },
+                    // paging bar on the bottom
+                    bbar: Ext.create('Ext.PagingToolbar', {
+                        itemId: 'pager',
+                        store: this.__teamStore,
+                        displayInfo: true,
+                        displayMsg: wowPortal.locale.MODULE_ARENATEAM_LIST_RANGE_MSG,
+                        emptyMsg: wowPortal.locale.MODULE_ARENATEAM_LIST_EMPTY_MSG
+                    }),
+                    title: wowPortal.locale.MODULE_ARENATEAM_TEAM_PANEL_TITLE
+                }), 
+                this.__itemsGrid = Ext.create('Ext.grid.GridPanel', {
+                    loadMask: true,
+                    title: wowPortal.locale.MODULE_ARENATEAM_CHARS_PANEL_TITLE,
+                    flex: 1,
+                    minHeight: 400,
+                    autoHeight: true,
+                    region: 'center',
+                    store: this.__itemsStore,
+                    columns: [
+                        {dataIndex: 'class', width: 30, renderer: function(value, metaData, record, colIndex, store, view) {
+                                var url = Ext.String.format('/images/class/small/{0}.gif', value);
+                                return '<img src="' + url + '" />';
+                            }, text: ''},
+                        {dataIndex: 'name', flex: 1, renderer: function(value, metaData, record, colIndex, store, view) {
+                                var str = record.data.is_captain == 1 ? wowPortal.locale.MODULE_ARENATEAM_CHARS_CAPTAIN : '';
+                                return value + str;
+                            }, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_CHARNAME},
+                        {dataIndex: 'personalRating',width: 100, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_RATING},
+                        {dataIndex: 'seasonGames',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONGAMES},
+                        {dataIndex: 'seasonWins',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONWINS},
+                        {dataIndex: 'seasonLose',width: 120, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_SEASONLOSE}/*,
+                        {dataIndex: 'weekGames',width: 100, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_WEEKGAMES},
+                        {dataIndex: 'weekWins',flex: 1, text: wowPortal.locale.MODULE_ARENATEAM_HEADER_WEEKWINS}*/
+                    ],
+                    plugins: [this.__itemsHeaderFilters = Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+                    viewConfig: {
+                        stripeRows: true,
+                        emptyText: wowPortal.locale.MODULE_ARENATEAM_LIST_EMPTY_MSG,
+                        listeners: {
+                            scope: this,
+                            //itemdblclick: this.__onRowDoubleClick
+                        }
+                    }
+            })]
+        });
+
+        this.callParent(arguments);
+        this.__pagingToolbar = this.down('#pager');
+    },
+
+    __onRowDoubleClick: function(sm, record) {
+        this.__showBuyDialog(record);
+    },
+
+    __showBuyDialog: function(record) {
+        var buyWindow = Ext.create('wowPortal.module.dialog.BuyItem', {
+            itemRecord: record,
+            callbackScope: this,
+            isShop: this.isShop,
+            callback: function(guid, count) {
+                this.setLoading(true);
+                this.buyFirectFn({
+                    charId: guid,
+                    itemId: record.get('entry'),
+                    count: count
+                }, function(response, provider) {
+                     this.setLoading(false);
+                     if('exception' === provider.type || true !== response) {
+                         //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                         return;
+                     } else {
+                         Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_SUCCESS);
+                         this.__pagingToolbar.doRefresh();
+                     }
+                }, this);
+            }
+        }, this);
+
+        buyWindow.show();
+    }
+});

@@ -1,0 +1,146 @@
+Ext.define('wowPortal.module.CharacterMoveToAccount', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        this.__accountNameField = Ext.create('Ext.form.field.Text', {
+            fieldLabel: wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_ACCOUNT_LABEL,
+            width: 480,
+            labelWidth: 240,
+            allowBlank: false,
+            listeners: {
+                scope: this,
+                change: function(field, newValue, oldValue, eOpts) {
+                    this.__isValid();
+                }
+            }
+        });
+        var checkboxSelModel = new Ext.selection.CheckboxModel({
+            checkOnly: true,
+            allowDeselect: true
+        });
+        this.__charactersGrid = Ext.create('Ext.grid.Panel', {
+                itemId: 'characters-grid',
+                title: wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_GRID_TITLE,
+                loadMask: true,
+                region: 'center',
+                store: {
+                    type: 'direct',
+                    model: 'wowPortal.model.MovingCharacters',
+                    remoteSort: false,
+                    autoLoad: true,
+                    sorters: [{
+                        property: 'name',
+                        direction: 'ASC'
+                    }],
+                    directFn: wowPortal.wow_Services.cmdGetCharactersListToMove
+                },
+                columns: [{
+                    dataIndex: 'name',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    flex: 1
+                }, {
+                    dataIndex: 'faction',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+                    width: 60,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'race',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'class',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'level',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 55
+                }, {
+                    dataIndex: 'totaltime',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+                    width: 90
+                }, {
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_PRICE,
+                    width: 60,
+                    dataIndex: 'fprice'
+                }],
+                selModel: checkboxSelModel,
+                viewConfig: {
+                    stripeRows: true
+                },
+                listeners: {
+                    scope: this,
+                    selectionchange: function(view, records) {
+                        this.__isValid();
+                    }
+                }
+            });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                items: [{
+                    xtype: 'container', 
+                    layout: 'hbox',
+                    items: [this.__accountNameField, {
+                        xtype: 'button',
+                        name: 'send',
+                        disabled: true,
+                        text: wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_SUBMIT_BTN,
+                        disabled: true,
+                        scope: this,
+                        handler: this.__onSendClick
+                     }]
+                }, this.__charactersGrid]
+            }]
+        });
+        this.callParent();
+
+        this.__sendBtn = this.down('[name=send]');
+    },
+
+    __onSendClick: function() {
+        if (this.__isValid()) {
+            var accountName = this.__accountNameField.getValue();
+            var selectedChars = this.__charactersGrid.getSelectionModel().getSelection();
+            var guids = [];
+            Ext.each(selectedChars, function(item) {
+                guids.push(item.get('guid'));
+            });
+
+            this.setLoading(true);
+            wowPortal.wow_Services.cmdCharacterMoveToAccount({
+                accountName: accountName,
+                guids: guids
+            }, function(response, provider) {
+                this.setLoading(false);
+                if('exception' !== provider.type && true === response.success) {
+                    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                }
+                this.__charactersGrid.getStore().load();
+            }, this);
+        }
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var accountName = this.__accountNameField.getValue();
+            var selectedChars = this.__charactersGrid.getSelectionModel().getSelection();
+            valid = !Ext.isEmpty(accountName) && !Ext.isEmpty(selectedChars);
+        }
+        this.__sendBtn.setDisabled(!valid);
+        return valid;
+    }
+});

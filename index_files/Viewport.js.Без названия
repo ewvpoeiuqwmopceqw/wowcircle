@@ -1,0 +1,1394 @@
+Ext.require([
+    'wowPortal.model.Servers'
+]);
+
+Ext.define('wowPortal.component.Viewport', {
+    extend: 'Ext.panel.Panel',
+    ui: 'mainView',
+    models: ['wowPortal.model.Servers', 'wowPortal.model.Messages'],
+
+    cls: 'tab-panel-zero-top',
+    border: false,
+    layout: {
+        type: 'anchor'
+    },
+    defaults: {
+        anchor: '100%'
+    },
+    style: 'padding: 141px 0px 0px 0px',
+    width: 1200,
+
+    __SESSION_KEY: 'PHPSESSID',
+
+    __currentNavItem: null,
+    __defaultVurl: 'manage',
+    __defaultAnonVurl: 'welcome',
+    __startupModuleVurl: 'manage',
+    __doNotProcessHistory: false,
+    __isLoggedIn: false,
+    __tabChangeEnabled: false,
+    __northCtHeight: 50,
+    __northCtHeightMin: 28,
+
+    __manageModules: {
+        manage: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_MANAGE_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_MANAGE_DESCR,
+            module: 'wowPortal.module.Manage',
+            icon: '/.jslib/resources/icons/nav_icon_manage.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        armory: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ARMORY_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ARMORY_DESCR,
+            module: 'wowPortal.module.Armory',
+            icon: '/.jslib/resources/icons/nav_icon_weaponexpertise.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        arenaInfo: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ARENATEAM_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ARENATEAM_DESCR,
+            module: 'wowPortal.module.ArenaInfo',
+            icon: '/.jslib/resources/icons/arena-tournament.png',
+            accessLevel: 0,
+            group: 'stat'
+        },
+        payment: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_PAYMENT_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_PAYMENT_DESCR,
+            module: 'wowPortal.module.Payment',
+            icon: '/.jslib/resources/icons/nav_icon_unleashedrage.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        email: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_EMAIL_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_EMAIL_DESCR,
+            module: 'wowPortal.module.AccountEmail',
+            icon: '/.jslib/resources/icons/nav_icon_improvedhealthfunnel.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        reminder: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_EMAIL_REMINDER_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_EMAIL_REMINDER_DESCR,
+            module: 'wowPortal.module.EmailReminder',
+            icon: '/.jslib/resources/icons/nav_icon_improvedrevenge.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        bonuses: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_BONUSES_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_BONUSES_DESCR,
+            module: 'wowPortal.module.Bonuses',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        stable: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_STABLE_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_STABLE_DESCR,
+            module: 'wowPortal.module.Stable',
+            icon: '/.jslib/resources/icons/nav_icon_dragonsbreath.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        shop: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_SHOP_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_SHOP_DESCR,
+            module: 'wowPortal.module.Shop',
+            icon: '/.jslib/resources/icons/nav_icon_omenofclarity.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        gift: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_GIFT_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_GIFT_DESCR,
+            module: 'wowPortal.module.Gift',
+            icon: '/.jslib/resources/icons/nav_icon_gift.png',
+            accessLevel: 0,
+            group: 'user'
+        },
+        sale: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_SALE_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_SALE_DESCR,
+            module: 'wowPortal.module.Sale',
+            icon: '/.jslib/resources/icons/nav_icon_balanceofpower.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        buychar: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_BUY_CHARACTER_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_BUY_CHARACTER_DESCR,
+            module: 'wowPortal.module.BuyCharacter',
+            icon: '/.jslib/resources/icons/nav_icon_unendingfury.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        charrecovery: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_RECOVERY_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_RECOVERY_DESCR,
+            module: 'wowPortal.module.CharacterRecovery',
+            icon: '/.jslib/resources/icons/nav_icon_improvedspirittap.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        antierror: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ANTI_ERROR_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ANTI_ERROR_DESCR,
+            module: 'wowPortal.module.AntiError',
+            icon: '/.jslib/resources/icons/nav_icon_frostchanneling.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        transfert: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_TRANSFERT_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_TRANSFERT_DESCR,
+            module: 'wowPortal.module.Transfer',
+            icon: '/.jslib/resources/icons/nav_icon_lightningreflexes.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+/*
+        charmove: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_WORLD_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_WORLD_DESCR,
+            module: 'wowPortal.module.CharacterMoveToWorld',
+            icon: '/.jslib/resources/icons/nav_icon_lightningreflexes.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+        chartransfer: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_TRANSFER_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_TRANSFER_DESCR,
+            module: 'wowPortal.module.CharacterTransfer',
+            icon: '/.jslib/resources/icons/nav_icon_lightningreflexes.gif',
+            accessLevel: 0,
+            group: 'user'
+        },
+*/
+        givebonuses: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_GIVE_BONUSES_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_GIVE_BONUSES_DESCR,
+            module: 'wowPortal.module.GiveBonuses',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 5,
+            group: 'admin'
+        },
+        accountlog: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_LOG_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_LOG_DESCR,
+            module: 'wowPortal.module.AccountLog',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 5,
+            group: 'admin'
+        },
+        commandlog: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_COMMAND_LOG_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_COMMAND_LOG_DESCR,
+            module: 'wowPortal.module.CommandLog',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 2,
+            group: 'admin'
+        },
+        arenalog: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_ARENA_LOG_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_ARENA_LOG_DESCR,
+            module: 'wowPortal.module.ArenaLog',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 2,
+            group: 'admin'
+        },
+        smslog: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_SMS_LOG_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_SMS_LOG_DESCR,
+            module: 'wowPortal.module.SMSLog',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 5,
+            group: 'admin'
+        },
+        issueList: {
+            title: wowPortal.locale.MODULE_ISSUE_LIST_TITLE,
+            descr: wowPortal.locale.MODULE_ISSUE_LIST_DESCR,
+            module: 'wowPortal.module.IssueList',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 2,
+            group: 'admin'
+        },
+        characterSnapshotsList: {
+            title: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_TITLE,
+            descr: wowPortal.locale.MODULE_CHARACTER_SNAPSHOTS_LIST_DESCR,
+            module: 'wowPortal.module.CharacterSnapshotsList',
+            icon: '/.jslib/resources/icons/nav_icon_concussivebarrage.gif',
+            accessLevel: 5,
+            group: 'admin'
+        },
+        welcome: {
+            title: wowPortal.locale.MODULE_WELCOME_TITLE,
+            descr: wowPortal.locale.MODULE_WELCOME_TITLE,
+            module: 'wowPortal.module.Welcome',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        },
+        votemanual:  {
+            title: '',
+            descr: '',
+            module: '',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        },
+        donate: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_GET_BONUSES,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_GET_BONUSES,
+            module: 'wowPortal.module.Donate',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        },
+        rules: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_RULES_TITLE,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_RULES_DESCR,
+            module: 'wowPortal.module.Rules',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        },
+        transman: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_CHAR_TRANSFER,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_CHAR_TRANSFER,
+            module: 'wowPortal.module.TransferManual',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        },
+        banlist: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_BANNED_LIST,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_BANNED_LIST,
+            module: 'wowPortal.module.BanList',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        }
+        /*,
+        help: {
+            title: wowPortal.locale.MAIN_PAGE_MENU_HELP,
+            descr: wowPortal.locale.MAIN_PAGE_MENU_HELP,
+            module: 'wowPortal.module.CookBook',
+            icon: '',
+            accessLevel: -1,
+            group: 'anon'
+        }
+        */
+    },
+
+    initComponent: function() {
+        Ext.History.init();
+        Ext.History.on('change', this.__onHistoryChange, this);
+
+        this.addEvents('loggedin', 'loggedout');
+        //Stories
+        var friendsStore = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.Friends',
+            autoLoad: false,
+            remoteSort: true,
+            remoteFilter: true,
+            baseParams: {limit: 10},
+            sorters: [{
+                property : 'online',
+                direction: 'DESC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdAccountFriendsList,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+        //Comboes
+        this.__serverListCombo = Ext.create('Ext.form.field.ComboBox', {
+            ui: 'serverList',
+            displayField: 'fdescription',
+            width: 210,
+            hideLabel: true,
+            queryMode: 'local',
+            typeAhead: false,
+            forceSelection: false,
+            lazyInit: false,
+            editable: false,
+            valueField: 'fkey',
+            //forceSelection: true,
+            allowBlank: false,
+            listConfig: {
+                getInnerTpl: function() {
+                    return '<div data-qtip="{fname}">{fdescription}</div>';
+                }
+            },
+            store: {
+                type: 'direct',
+                model: 'wowPortal.model.Servers',
+                autoLoad: false,
+                directFn: wowPortal.wow_Services.cmdGetServersList,
+                listeners: {
+                    scope: this,
+                    beforeload: function(store, operation) {
+                        //this.__serverListCombo.setLoading(true);
+                        this.__serverListCombo.disable();
+                    },
+                    load: function(store, record, successfull) {
+                        //this.__serverListCombo.setLoading(false);
+                        this.__serverListCombo.enable();
+                        var rec = store.findRecord('selected', true);
+                        this.__serverListCombo.setValue(rec);
+                    }
+                }
+            },
+            listeners: {
+                scope: this,
+                select: function(combo, selection) {
+                    var server = selection[0];
+                    if (server) {
+                        var langQuery = window.location.search.match(/(lang=\w{2})/);
+                        window.location = window.location.pathname + '?' + (langQuery ? langQuery[1] + '&' : '') +
+                             Ext.String.format('serverId={0}', server.get('fkey'));
+                    }
+                }
+            }
+        });
+        this.__messagesListCombo = Ext.create('Ext.form.field.ComboBox', {
+            ui: 'messagesList',
+            itemId: 'breadcrumb-news',
+            displayField: 'ftitle',
+            //width: 210,
+            hideLabel: true,
+            queryMode: 'local',
+            typeAhead: false,
+            forceSelection: false,
+            lazyInit: false,
+            editable: false,
+            valueField: 'mfkey',
+            allowBlank: false,
+            listConfig: {
+                getInnerTpl: function() {
+                    return '<div data-qtip="{fmessage}">{ftopic}</div>';
+                }
+            },
+            store: {
+                model: 'wowPortal.model.Messages',
+                autoLoad: false,
+                idProperty: 'mfkey',
+                baseParams: {limit: 10},
+                sorters: [{
+                    property : 'fdatetime',
+                    direction: 'DESC'
+                }],
+                proxy: {
+                    model: 'wowPortal.model.Messages',
+                    directFn: wowPortal.wow_Services.cmdGetMessagesList,
+                    type: 'direct',
+                    reader: {
+                        reader: 'json',
+                        root: 'data',
+                        idProperty: 'mfkey',
+                        totalProperty: 'total'
+                    }
+                },
+                listeners: {
+                    scope: this,
+                    beforeload: function(store, operation) {
+                        this.__messagesListCombo.disable();
+                    },
+                    load: function(store, record, successfull) {
+                        this.__messagesListCombo.enable();
+                        var rec = store.findRecord('selected', true);
+                        this.__messagesListCombo.setValue(rec);
+                    }
+                }
+            },
+            listeners: {
+                scope: this,
+                select: function(combo, selection) {
+                    alert(1);
+                    var server = selection[0];
+                    alert(server);
+                    if (server) 
+                    {
+                        alert(server);
+                    }
+                }
+            }
+        });
+        
+        this.__navigation = new Ext.create('Ext.Toolbar', {
+            dock: 'top',
+            flex: 1,
+            ui: 'head-navigation',
+            items: [this.__serverListCombo, {
+                xtype: 'button',
+                itemId: 'account-name-btn',
+                text: wowPortal.user.name,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('manage');
+                }
+            }, {
+                xtype: 'box',
+                style: 'color: gold',
+                itemId: 'account-balance-lbl',
+                cls: 'rank-icon',
+                html: wowPortal.locale.MAIN_PAGE_ACCOUNT_BALANCE_LABEL
+            }, {
+                xtype: 'box',
+                style: 'color: gold',
+                cls: 'balance-icon',
+                itemId: 'account-balance',
+                text: ''
+            },
+            {
+                xtype: 'tbseparator'
+            }, '->',
+            {
+                xtype: 'button',
+                itemId: 'get-bonuses-bnt',
+                //hidden: true,
+                text: wowPortal.locale.MAIN_PAGE_MENU_GET_BONUSES,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('donate');
+                    //this.__openTab('wowPortal.module.Donate', button.text);
+                }
+            }, {
+                xtype: 'button',
+                itemId: 'char-transfer-btn',
+                //hidden: true,
+                text: wowPortal.locale.MAIN_PAGE_MENU_CHAR_TRANSFER,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('transman');
+                    //this.__openTab('wowPortal.module.TransferManual', button.text);
+                }
+            }, {
+                xtype: 'button',
+                itemId: 'rules-bnt',
+                //hidden: true,
+                text: wowPortal.locale.MAIN_PAGE_MENU_RULES_TITLE,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('rules');
+                }
+            }, {
+                xtype: 'button',
+                itemId: 'banned-list-btn',
+                //hidden: true,
+                text: wowPortal.locale.MAIN_PAGE_MENU_BANNED_LIST,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('banlist');
+                    //this.__openTab('wowPortal.module.BanList', button.text);
+                }
+            }, /*{
+                xtype: 'button',
+                itemId: 'help-btn',
+                //hidden: true,
+                text: wowPortal.locale.MAIN_PAGE_MENU_HELP,
+                scope: this,
+                handler: function(button) {
+                    this.navigateTo('help');
+                    //this.__openTab('wowPortal.module.CookBook', button.text);
+                }
+            },*/ {
+                xtype: 'tbseparator'
+            }, {
+                xtype: 'button',
+                itemId: 'register-btn',
+                style: 'font-weight: bolder;',
+                text: wowPortal.locale.MAIN_PAGE_MENU_REGISTER,
+                scope: this,
+                handler: function(button) {
+                    this.showRegisterWindow();
+                }
+            }, {
+                xtype: 'button',
+                itemId: 'login-btn',
+                style: 'font-weight: bolder;',
+                text: wowPortal.locale.MAIN_PAGE_MENU_LOGIN,
+                scope: this,
+                handler: function(button) {
+                    this.showLoginWindow();
+                }
+            }, {
+                xtype: 'button',
+                itemId: 'logout-btn',
+                style: 'font-weight: bolder;',
+                text: wowPortal.locale.MAIN_PAGE_MENU_LOGOUT,
+                scope: this,
+                handler: function(button) {
+                    this.maskBody();
+                    wowPortal.wow_Services.cmdLogout(this.__onLoggedout, this);
+                }
+            }]
+        });
+
+        this.__breadcrumbs = new Ext.create('Ext.Container', {
+            dock: 'top',
+            ui: 'breadcrumb',
+            height: 30,
+            style: 'padding-left: 4px; padding-top: 6px;',
+            //hidden: true,
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                pack: 'start'
+            },
+            items: [{
+                xtype: 'box',
+                html: wowPortal.locale.MAIN_PAGE_BREADCRUMB_FIRST,
+                width: 90
+            }, {
+                xtype: 'box',
+                itemId: 'breadcrumb-last',
+                html: ''
+            }, {
+                xtype: 'box',
+                itemId: 'breadcrumb-middle',
+                html: '',
+                width: 300,
+                flex: 1
+            }, //this.__messagesListCombo, 
+            {
+                xtype: 'box',
+                html: '',
+                flex: 2
+            }]
+        });
+
+        var westPanel = {
+            itemId: 'navigation',
+            ui: 'leftNavigation',
+            cellCls: 'left-center-panel',
+            //collapsible: true,
+            preventHeader: true,
+            //collapseDirection: 'left',
+            width: 210,
+            defaults: {
+                // applied to each contained panel
+                //bodyStyle: 'padding: 4px'
+            },
+            items: [{
+                title: wowPortal.locale.MAIN_PAGE_USER_NAVIGATION_TITLE,
+                ui: 'leftNavigation',
+                itemId: 'user-nav-pnl',
+                layout: 'anchor',
+                autoScroll: true,
+                hidden: true,
+                defaults: {
+                    anchor: '100%',
+                    style: 'text-align: left'
+                },
+                listeners: {
+                    scope: this,
+                    beforecollapse: function(panel, direction, animate, eOpts) {
+                        if (this.__adminNavigationPanel.hidden) {
+                            return false;
+                        }
+                    }
+                }
+            }, {
+                title: wowPortal.locale.MAIN_PAGE_STAT_NAVIGATION_TITLE,
+                itemId: 'stat-nav-pnl',
+                layout: 'anchor',
+                autoScroll: true,
+                defaults: {
+                    anchor: '100%',
+                    style: 'text-align: left'
+                }
+            }, {
+                title: wowPortal.locale.MAIN_PAGE_ADMIN_NAVIGATION_TITLE,
+                itemId: 'admin-nav-pnl',
+                layout: 'anchor',
+                autoScroll: true,
+                //hidden: true,
+                defaults: {
+                    anchor: '100%',
+                    style: 'text-align: left'
+                }
+            }, {
+                xtype: 'panel',
+                border: false,
+                frame: true,
+                height: 100,
+                style: 'margin: 50px 5px 5px 5px',
+                itemId: 'counter',
+                html: wowPortal.locale.COMMON_LIVE_INTERNET + ' ' + wowPortal.locale.COMMON_GOOGLE
+            }]
+        };
+
+        
+        var eastPanel = {
+            //preventHeader: true,
+            title: wowPortal.locale.MAIN_PAGE_ADDITIONAL_TITLE,
+            ui: 'rightNavigation',
+            cellCls: 'right-center-panel',
+            //collapsible: false,
+            //collapseDirection: 'right',
+            itemId: 'additional',
+            width: 210,
+            //cls: 'height-100',
+            //style: 'height: 100%',
+            //height: '100%',
+            items: [{
+                xtype: 'container',
+                itemId: 'operator-icon',
+                padding: '10px 0 0 0'
+            }, {
+                xtype: 'gridpanel',
+                itemId: 'friends',
+                padding: '10px 0 0px 0',
+                store: friendsStore,
+                loadMask: true,
+                autoLoad: false,
+                columns: [{
+                    text: wowPortal.locale.MODULE_FRIENDS_LIST_HEADER_NAME,
+                    flex: 1,
+                    dataIndex: 'name',
+                }, {
+                    text: wowPortal.locale.MODULE_FRIENDS_LIST_HEADER_ONLINE,
+                    dataIndex: 'online',
+                    width: 40,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        if(value == 1)
+                            return '<center><img style="width:18px; height:18px;" src="/images/manage/icon_gold.gif"/></center>';
+                        return '<center><img style="width:18px; height:18px;" src="/images/manage/icon_gold_disabled.gif"/></center>';
+                    }
+                }], 
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_FRIENDS_LIST_EMPTY_MSG
+                },
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: friendsStore,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_FRIENDS_LIST_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_FRIENDS_LIST_EMPTY_MSG
+                })
+            }, {
+                xtype: 'container',
+                style: 'text-align: center;',
+                padding: '20px 0 0px 0',
+                items: [{
+                    xtype: 'button',
+                    scope: this,
+                    text: wowPortal.locale.MAIN_PAGE_VOTE_MANUAL_TITLE,
+                    handler: function(button) {
+                        this.__showVoteManual();
+                    }
+                }/*, {
+                xtype: 'dataview',
+                itemId: 'banners',
+                padding: '10px 0 0px 0',
+                //loadMask: true,
+                store: {
+                    type: 'direct',
+                    model: 'wowPortal.model.Banners',
+                    remoteSort: false,
+                    autoLoad: false,
+                    directFn: wowPortal.wow_Services.cmdGetVoteServerList
+                },
+                tpl: new Ext.XTemplate(
+                    '<div class="vote-banners">',
+                        '<tpl for=".">',
+                            '<div class="vote-banner">',
+                            '{fbanner}',
+                            '</div>',
+                        '</tpl>',
+                    '</div>'
+                ),
+                itemSelector: 'div.vote-banner',
+                emptyText: '<div class="vote-banners"></div>'
+                }, {
+                xtype: 'container',
+                style: 'padding: 10px; font-size: 0.8em',
+                html: wowPortal.locale.MAIN_PAGE_VOTE_HINT
+                }*/]
+            }]
+        };
+
+        var centerPanel = {
+            xtype: 'tabpanel',
+            itemId: 'tabpanel',
+            autoHeight: true,
+            cellCls: 'center-cell',
+            ui: 'content',
+            items: [],
+            listeners: {
+                scope: this,
+                tabchange: this.__onTabChange
+            }
+        }
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'container',
+                itemId: 'noth-ct',
+                height: this.__northCtHeight,
+                region: 'north',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch',
+                    pack: 'start'
+                },
+                items: [this.__navigation, this.__breadcrumbs]
+            }, {
+                xtype: 'container',
+                ui: 'content',
+                style: 'padding-bottom: 15px;',
+                cls: 'center-container',
+                layout: {
+                    type: 'table',
+                    columns: 5
+                },
+                items: [westPanel, {
+                    xtype: 'box',
+                    itemId: 'left-collapse-btn',
+                    cls: 'collapse-left',
+                    height: 40,
+                    width: 8,
+                    listeners: {
+                        scope: this,
+                        afterrender: function() {
+                            this.__leftCollapseBtn.el.on('click', function() {
+                                if (this.__navigationPanel.hidden) {
+                                    this.__navigationPanel.show();
+                                    //this.__navigationPanel.expand();
+                                    this.__leftCollapseBtn.el.addCls('collapse-left');
+                                    this.__leftCollapseBtn.el.removeCls('collapse-right');
+                                } else {
+                                    //this.__navigationPanel.collapse();
+                                    this.__navigationPanel.hide();
+                                    this.__leftCollapseBtn.el.addCls('collapse-right');
+                                    this.__leftCollapseBtn.el.removeCls('collapse-left');
+                                }
+                                this.__updateTabPanelWidth();
+                            }, this);
+                        }
+                    }
+                }, centerPanel, {
+                    xtype: 'box',
+                    itemId: 'right-collapse-btn',
+                    cls: 'collapse-right',
+                    height: 40,
+                    width: 8,
+                    listeners: {
+                        scope: this,
+                        afterrender: function() {
+                            this.__rightCollapseBtn.el.on('click', function() {
+                                if (this.__additionalPanel.hidden) {
+                                    this.__additionalPanel.show();
+                                    //this.__additionalPanel.expand();
+                                    this.__rightCollapseBtn.el.addCls('collapse-right');
+                                    this.__rightCollapseBtn.el.removeCls('collapse-left');
+                                } else {
+                                    //this.__additionalPanel.collapse();
+                                    this.__additionalPanel.hide();
+                                    this.__rightCollapseBtn.el.addCls('collapse-left');
+                                    this.__rightCollapseBtn.el.removeCls('collapse-right');
+                                }
+
+                                this.__updateTabPanelWidth();
+                            }, this);
+                        }
+                    }
+                }, eastPanel]
+            }, {
+                region: 'south',
+                style: 'position: fixed; bottom: 0; margin: 0 auto;',
+                colapsible: false,
+                split: false,
+                height: 15,
+                width: 1200,
+                items: [{
+                    xtype: 'box',
+                    itemId: 'status-pnl',
+                    style: 'text-align: center; font-size: 0.8em',
+                    html: '&nbsp;'
+                }]
+            }]
+        });
+
+        this.callParent(arguments);
+
+        this.__northContainer = this.down('#noth-ct');
+        this.__navigationPanel = this.down('#navigation');
+        this.__breadcrumbLastText = this.down('#breadcrumb-last');
+        //this.__messagesList = this.down('#breadcrumb-news');
+        this.__userNavigationPanel = this.down('#user-nav-pnl');
+        this.__adminNavigationPanel = this.down('#admin-nav-pnl');
+        this.__statNavigationPanel = this.down('#stat-nav-pnl');
+        this.__statusPanel = this.down('#status-pnl');
+        this.__additionalPanel = this.down('#additional');
+        this.__accountNameBtn = this.__navigation.down('#account-name');
+        this.__accountBalanceText = this.__navigation.down('#account-balance');
+        this.__accountBalanceLbl = this.__navigation.down('#account-balance-lbl');
+        this.__tabPanel = this.down('#tabpanel');
+        this.__leftCollapseBtn = this.down('#left-collapse-btn');
+        this.__rightCollapseBtn = this.down('#right-collapse-btn');
+        this.__banners = this.down('#banners');
+        this.__friends = this.down('#friends');
+        this.__operatorIcon = this.down('#operator-icon');
+
+        this.__accountNameBtn = this.down('#account-name-btn');
+        this.__getBonusesBtn = this.down('#get-bonuses-bnt');
+        this.__charTransferBtn = this.down('#char-transfer-btn');
+        this.__banListBtn = this.down('#banned-list-btn');
+        this.__helpBtn = this.down('#help-btn');
+
+        this.__registerBtn = this.down('#register-btn');
+        this.__loginBtn = this.down('#login-btn');
+        this.__logoutBtn = this.down('#logout-btn');
+
+        this.__hide();
+        // by default show as logged off
+        this.__processLogout(false);
+
+        wowPortal.wow_Services.cmdGetStatusInfo(this.__onGetStatusInfo, this);
+        this.on('afterrender', function() {
+            this.maskBody(wowPortal.locale.MAIN_PAGE_CHECK_AUTH);
+            wowPortal.wow_Services.cmdGetCurrentSession(this.__onGetCurrentSession, this);
+        }, this, {single: true});
+    },
+
+    logout: function() {
+        this.__processLogout();
+    },
+
+    getTabPanel: function() {
+        return this.__tabPanel;
+    },
+
+    maskTabPanel: function(msg) {
+        var config = {};
+        if (msg) {
+            config.msg = msg;
+        }
+        this.__tabPanelLoadMask = new Ext.LoadMask(this.__tabPanel, config);
+        this.__tabPanelLoadMask.show();
+    },
+
+    unmaskTabPanel: function() {
+        if (this.__tabPanelLoadMask) {
+            this.__tabPanelLoadMask.hide();
+            this.__tabPanelLoadMask.destroy();
+            this.__tabPanelLoadMask = null;
+        }
+    },
+
+    maskBody: function(msg) {
+        var config = {};
+        if (msg) {
+            config.msg = msg;
+        }
+        this.__bodyLoadMask = new Ext.LoadMask(Ext.getBody(), config);
+        this.__bodyLoadMask.show();
+    },
+
+    unmaskBody: function() {
+        if (this.__bodyLoadMask) {
+            this.__bodyLoadMask.hide();
+            this.__bodyLoadMask.destroy();
+            this.__bodyLoadMask = null;
+        }
+    },
+
+    __show: function()
+    {
+        Ext.getBody().removeCls('hide');
+        this.show();
+    },
+
+    __hide: function()
+    {
+        Ext.getBody().addCls('hide');
+        this.hide();
+    },
+
+    __onModuleButtonClick: function(item, event, eOpts) {
+        this.navigateTo(item.itemId);
+    },
+
+    __onTabChange: function(tabPanel, newCard, oldCard, eOpts) {
+        //this.doComponentLayout();
+        this.__breadcrumbLastText.update(newCard.title);
+
+        if (!this.__tabChangeEnabled) {
+            return;
+        }
+
+        Ext.History.add(newCard.initialConfig.vurl);
+    },
+
+    __updateTabPanelWidth: function() {
+        // 764 - L + R
+        // 974 - L/R
+        // 1184 -
+        var width;
+        if (this.__navigationPanel.hidden && this.__additionalPanel.hidden) {
+            width = 1184;
+        } else if (!this.__navigationPanel.hidden && !this.__additionalPanel.hidden) {
+            width = 764;
+        } else {
+            width = 974;
+        }
+
+        this.__tabPanel.setWidth(width);
+    },
+
+    __openTab: function(moduleClass, title, vurl, closeable, index) {
+        closeable = Ext.isDefined(closeable) ? closeable : true;
+        index = Ext.isDefined(index) ? index : null;
+
+        var tab = this.__tabPanel.getComponent(moduleClass);
+
+        if (!tab) {
+            tab = Ext.create(moduleClass, {
+                itemId: moduleClass,
+                closable: closeable,
+                title: title,
+                vurl: vurl
+            });
+            if (null === index) {
+                this.__tabPanel.add(tab);
+            } else {
+                this.__tabPanel.insert(index, tab);
+            }
+
+            if ('armory' == vurl) {
+                //this.__additionalPanel.collapse();
+                this.__additionalPanel.hide();
+                this.__updateTabPanelWidth();
+                this.__rightCollapseBtn.el.addCls('collapse-left');
+                this.__rightCollapseBtn.el.removeCls('collapse-right');
+            }
+        }
+
+        this.__tabPanel.setActiveTab(tab);
+    },
+
+    __closeTab: function(moduleClass) {
+        var tab = this.__tabPanel.getComponent(moduleClass);
+        if (tab) {
+            tab.destroy();
+        }
+    },
+
+    // History processing
+    __onHistoryChange: function(token) {
+        if (Ext.isDefined(token)) {
+            if (Ext.isIE) {
+                var i = token.indexOf('#');
+                token = token.substr(i + 1);
+            }
+            if (!Ext.isDefined(this.__manageModules[token]) || wowPortal.data.accountLevel < this.__manageModules[token].accessLevel) {
+                token = (-1 !== wowPortal.data.accountLevel) ?  this.__defaultVurl : this.__defaultAnonVurl;
+            }
+            this.__processVurl(token);
+        }
+    },
+
+    navigateTo: function(vurl) {
+        var token = Ext.History.getToken();
+        if (!Ext.isDefined(this.__manageModules[token]) || wowPortal.data.accountLevel < this.__manageModules[token].accessLevel) {
+            token = (-1 !== wowPortal.data.accountLevel) ?  this.__defaultVurl : this.__defaultAnonVurl;
+        }
+        Ext.History.add(vurl);
+
+        // manually fire change event, because History do not fire "change" if token do not changed
+        if (vurl == token) {
+            Ext.History.fireEvent('change', vurl);
+        }
+    },
+
+    __processVurl: function(vurl) {
+        vurl = vurl || '';
+ 
+        // some hacks
+        switch(vurl) {
+            case 'votemanual':
+                this.__showVoteManual();
+                return;
+                break;
+        } 
+
+        if (this.__currentNavItem && this.__currentNavItem.itemId === vurl) {
+            this.__tabPanel.setActiveTab(vurl);
+            return;
+        }
+
+        var item = this.__navigationPanel.down('#' + vurl);
+        this.__currentNavItem = item;
+
+        this.__openTab(this.__manageModules[vurl].module, this.__manageModules[vurl].title, vurl);
+    },
+
+    __onGetStatusInfo: function(response, provider) {
+        if ('exception' !== provider.type) {
+            this.__statusPanel.update(response);
+        }
+    },
+
+    __onGetCurrentSession: function(response, provider) {
+        this.unmaskBody();
+        //this.setLoading(false);
+
+        if ('exception' === provider.type || true !== response.isAuth) {
+            // not logged in or server exception
+            this.showLoginWindow();
+            return;
+        }
+
+        this.__show();
+        wowPortal.data.armoryURL = response.armoryURL;
+        wowPortal.data.accountName = response.name;
+        wowPortal.data.realm = response.realm;
+        this.__processLogin(response);
+    },
+
+    __onLoginCallback: function(username, password, captcha) {
+        this.maskBody(wowPortal.locale.MAIN_PAGE_LOGINING);
+        wowPortal.wow_Services.cmdLogin({
+            accountName: username,
+            password: password,
+            captcha: captcha
+        }, this.__onLoggedin, this);
+    },
+
+    __onRegisterCallback: function(username, password, password2, email, captcha) {
+        this.maskBody();
+        wowPortal.wow_Services.cmdAccountRegister({
+            accountName: username,
+            password: password,
+            pretry: password2,
+            email: email,
+            captcha: captcha
+        }, this.__onRegistered, this);
+    },
+
+    __onRegistered: function(response, provider) {
+        this.unmaskBody();
+        if('exception' === provider.type || true !== response.success) {
+            this.__registerWin.updateCaptcha();
+            return;
+        }
+
+        this.__registerWin.close();
+        this.showLoginWindow();
+        Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+    },
+
+    __onNotifyPasswordCallback: function(username, email, capcha) {
+        this.maskBody();
+        wowPortal.wow_Services.cmdSendPasswordNotification({
+            accountName: username,
+            email: email,
+            capcha: capcha
+        }, this.__onNotifyed, this);
+    },
+
+    __onNotifyed: function(response, provider) {
+        this.unmaskBody();
+        if('exception' === provider.type || true !== response.success) {
+            return;
+        }
+
+        this.__notifyPasswordWin.close();
+        this.showLoginWindow();
+        Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+    },
+
+    __onLoggedin: function(response, provider) {
+        this.unmaskBody();
+        if('exception' === provider.type || true !== response.isAuth) {
+            this.__loginWin.updateCaptcha();
+            return;
+        }
+
+        this.fireEvent('loggedin', response);
+        this.__processLogin(response);
+        this.__loginWin.close();
+        this.__loginWin.destroy();
+    },
+
+    __onLoggedout: function(response, provider) {
+        this.unmaskBody();
+        if('exception' === provider.type || true !== response) {
+            return;
+        }
+        Ext.util.Cookies.clear(this.__SESSION_KEY);
+        this.fireEvent('loggedout');
+        this.__processLogout();
+    },
+
+    __prepareNavigation: function() {
+        // prepare user navigation items
+        var userNavItems = [];
+        Ext.iterate(this.__manageModules, function(vurl, pageInfo) {
+            if ('user' == pageInfo.group && wowPortal.data.accountLevel >= pageInfo.accessLevel)
+            userNavItems.push({
+                xtype: 'button',
+                scale: 'medium',//'large',
+                textAlign: 'left',
+                text: pageInfo.title,
+                icon: pageInfo.icon,
+                itemId: vurl,
+                listeners: {
+                    scope: this,
+                    click: this.__onModuleButtonClick
+                }
+            });
+        }, this);
+        if (userNavItems.length > 0) {
+            this.__userNavigationPanel.add(userNavItems);
+            this.__userNavigationPanel.show();
+        } else {
+            this.__userNavigationPanel.hide();
+        }
+        // prepare stat navigation items
+        var statNavItems = [];
+        Ext.iterate(this.__manageModules, function(vurl, pageInfo) {
+            if ('stat' == pageInfo.group && wowPortal.data.accountLevel >= pageInfo.accessLevel)
+            statNavItems.push({
+                xtype: 'button',
+                scale: 'medium',//'large',
+                textAlign: 'left',
+                text: pageInfo.title,
+                icon: pageInfo.icon,
+                itemId: vurl,
+                listeners: {
+                    scope: this,
+                    click: this.__onModuleButtonClick
+                }
+            });
+        }, this);
+        if (statNavItems.length > 0) {
+            this.__statNavigationPanel.add(statNavItems);
+            this.__statNavigationPanel.show();
+        } else {
+            this.__statNavigationPanel.hide();
+        }
+
+        // prepare admin navigation items
+        var adminNavItems = [];
+        Ext.iterate(this.__manageModules, function(vurl, pageInfo) {
+            if ('admin' == pageInfo.group && wowPortal.data.accountLevel >= pageInfo.accessLevel)
+            adminNavItems.push({
+                xtype: 'button',
+                textAlign: 'left',
+                text: pageInfo.title,
+                icon: pageInfo.icon,
+                itemId: vurl,
+                listeners: {
+                    scope: this,
+                    click: this.__onModuleButtonClick
+                }
+            });
+        }, this);
+        if (adminNavItems.length > 0) {
+            this.__adminNavigationPanel.add(adminNavItems);
+            this.__adminNavigationPanel.show();
+        } else {
+            this.__adminNavigationPanel.hide();
+        }
+
+        this.__userNavigationPanel.expand();
+        this.__statNavigationPanel.expand();
+        this.__userNavigationPanel.collapsible = adminNavItems.length > 0;
+    },
+
+    __processLogin: function(data) {
+        this.__isLoggedIn = true;
+        wowPortal.data.accountName = data.name;
+        wowPortal.data.accountId = data.id;
+        wowPortal.data.accountLevel = data.accountLevel;
+
+        this.__show();
+
+        this.__navigationPanel.show();
+        this.__additionalPanel.show();
+        this.__updateTabPanelWidth();
+
+        this.__breadcrumbs.show();
+        this.__northContainer.setHeight(this.__northCtHeight);
+        this.__leftCollapseBtn.show();
+        this.__rightCollapseBtn.show();
+
+        this.__prepareNavigation();
+        var startupModule = this.__manageModules[this.__startupModuleVurl];
+        this.__openTab(startupModule.module, startupModule.title, this.__startupModuleVurl, false, 0);
+        this.__closeTab('wowPortal.module.Welcome');
+
+        if(wowPortal.locale.MAIN_PAGE_INFO_OPERATOR_ON)
+        {
+            this.__operatorIcon.update(Ext.String.format(wowPortal.locale.MAIN_PAGE_INFO_OPERATOR_ICON, wowPortal.data.accountName, wowPortal.data.accountId));
+        }
+
+        wowPortal.data.armoryURL = data.armoryURL;
+
+        this.__accountNameBtn.show();
+        this.__accountBalanceText.show();
+        this.__accountBalanceLbl.show();
+        //this.__getBonusesBtn.show();
+        //this.__charTransferBtn.show();
+        //this.__banListBtn.show();
+        //this.__helpBtn.show();
+
+        this.__registerBtn.hide();
+        this.__loginBtn.hide();
+        this.__logoutBtn.show();
+
+        this.__accountNameBtn.show();
+        this.__accountNameBtn.setText(wowPortal.data.accountName);
+
+        this.__serverListCombo.getStore().load();
+        this.__serverListCombo.show();
+        
+        this.__messagesListCombo.getStore().load();
+        this.__messagesListCombo.show();
+        
+        //this.__banners.getStore().load();
+        this.__friends.getStore().load();
+        
+        // process vurl
+        var token = Ext.History.getToken() || this.__defaultVurl;
+        if (!Ext.isDefined(this.__manageModules[token]) || wowPortal.data.accountLevel < this.__manageModules[token].accessLevel) {
+            token = (-1 !== wowPortal.data.accountLevel) ?  this.__defaultVurl : this.__defaultAnonVurl;
+        }
+
+        if (token != this.__defaultVurl) {
+            this.navigateTo(token);
+        }
+        this.__tabChangeEnabled = true;
+    },
+
+    __processLogout: function(showLoginWin) {
+        showLoginWin = Ext.isDefined(showLoginWin) ? showLoginWin : true;
+
+        this.__tabChangeEnabled = false;
+        this.__isLoggedIn = false;
+        wowPortal.data.armoryURL = '';
+        wowPortal.data.accountName = '';
+        wowPortal.data.accountLevel = -1;
+
+        if (showLoginWin) {
+            this.showLoginWindow();
+        }
+
+        this.__tabPanel.removeAll(true);
+        this.__userNavigationPanel.removeAll(true);
+        this.__adminNavigationPanel.removeAll(true);
+        this.__breadcrumbs.hide();
+        this.__northContainer.setHeight(this.__northCtHeightMin);
+        this.__leftCollapseBtn.hide();
+        this.__rightCollapseBtn.hide();
+        if (this.__leftCollapseBtn.redered) {
+            this.__leftCollapseBtn.el.addCls('collapse-left');
+            this.__leftCollapseBtn.el.removeCls('collapse-right');
+        }
+        if (this.__rightCollapseBtn.rendered) {
+            this.__rightCollapseBtn.el.addCls('collapse-right');
+            this.__rightCollapseBtn.el.removeCls('collapse-left');
+        }
+
+        this.__accountNameBtn.setText('');
+        this.__accountBalanceText.update('-');
+
+        this.__openTab('wowPortal.module.Welcome', wowPortal.locale.MODULE_WELCOME_TITLE, this.__defaultAnonVurl, true);
+        this.__operatorIcon.update('');
+
+        this.__navigationPanel.hide();
+        this.__additionalPanel.hide();
+        this.__updateTabPanelWidth();
+
+        this.__serverListCombo.hide();
+        this.__messagesListCombo.hide();
+
+        this.__accountNameBtn.hide();
+        this.__accountBalanceText.hide();
+        this.__accountBalanceLbl.hide();
+        //this.__getBonusesBtn.hide();
+        //this.__charTransferBtn.hide();
+        //this.__banListBtn.hide();
+        //this.__helpBtn.hide();
+
+        this.__registerBtn.show();
+        this.__loginBtn.show();
+        this.__logoutBtn.hide();
+
+        this.__accountNameBtn.hide();
+    },
+
+    __showVoteManual: function() {
+        Ext.create('Ext.window.Window', {
+            title: wowPortal.locale.MAIN_PAGE_VOTE_MANUAL_TITLE,
+            modal: true,
+            height: 300,
+            width: 550,
+            layout: 'fit',
+            html: wowPortal.locale.MAIN_PAGE_VOTE_MANUAL_TEXT
+        }).show();
+    },
+
+    showLoginWindow: function() {
+        this.__hide();
+        this.__loginWin = new wowPortal.module.dialog.Login({
+            callback: this.__onLoginCallback,
+            callbackScope: this,
+            closeCallback: this.__show
+        });
+        this.__loginWin.show();
+    },
+
+    showRegisterWindow: function(fromLogin) {
+        this.__hide();
+        this.__registerWin = new wowPortal.module.dialog.Register({
+            callback: this.__onRegisterCallback,
+            callbackScope: this,
+            closeCallback: this.__show,
+            fromLogin: fromLogin
+        });
+        this.__registerWin.show();
+    },
+
+    showNotifyPasswordWindow: function() {
+        this.__hide();
+        this.__notifyPasswordWin = new wowPortal.module.dialog.PasswordNotify({
+            callback: this.__onNotifyPasswordCallback,
+            callbackScope: this,
+            closeCallback: this.__show
+        });
+        this.__notifyPasswordWin.show();
+    },
+
+    setBalance: function(balance) {
+        this.__accountBalanceText.update(balance);
+    },
+
+    refreshGeneralAccountInfo: function() {
+        var tab = this.__tabPanel.getComponent('wowPortal.module.Manage');
+        if (tab) {
+            tab.refreshGeneralAccountInfo();
+        }
+    },
+
+    refreshAccountCharacterList: function() {
+        var tab = this.__tabPanel.getComponent('wowPortal.module.Manage');
+        if (tab) {
+            tab.refreshAccountCharacterList();
+        }
+    }
+});

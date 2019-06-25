@@ -1,0 +1,167 @@
+Ext.define('wowPortal.module.AccountEmailSms', {
+    extend: 'wowPortal.module.Common',
+
+    layout: {
+        type: 'ux.center'
+    },
+    __captchaImgSrc: '/skins/app/images/password_key.jpg',
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                //title: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CHANGE_TITLE,
+                style: 'margin: 10px',
+                bodyPadding: 10,
+                width: 400,
+                padding: '40px 0',
+                items: [{
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'emailold',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_OLD_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'email',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_NEW_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    anchor: '100%',
+                    name: 'phone',
+                    fieldLabel: wowPortal.locale.MOBILE_ACCEPT_WINDOW_PHONE_LABEL,
+                    value: '',
+                    allowBlank: false
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    layout: 'hbox',
+                    style: 'margins: 0px',
+                    items: [{
+                        xtype: 'box',
+                        itemId: 'captcha-img',
+                        style: 'text-align: center; margins: 0px;'
+                    }, {
+                        xtype: 'button',
+                        itemId: 'refresh-captcha',
+                        text: '',
+                        scope: this,
+                        cls: 'refresh-captcha',
+                        iconCls: 'refresh-captcha-icon',
+                        handler: this.updateCaptcha
+                    }]
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'captcha',
+                    anchor: '',
+                    labelWidth: 200,
+                    width: 325,
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_CAPTCHA_LABEL,
+                    allowBlank: false,
+                    listeners:{
+                        change: function(field, newValue, oldValue){
+                            field.setValue(newValue.toUpperCase());
+                        }
+                    }
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    anchor: '100%',
+                    itemId: 'mobileKey',
+                    name: 'mobileKey',
+                    fieldLabel: wowPortal.locale.PASSWORD_WINDOW_SMS_CODE_LABEL,
+                    value: '',
+                    allowBlank: true
+                }, {
+                    xtype: 'container',
+                    layout: {
+                        type: 'hbox',
+                        pack: 'center'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        text: wowPortal.locale.COMMON_BUTTON_HAVE_CODE,
+                        scope: this,
+                        itemId: 'haveBtn',
+                        handler: function() {
+                            me.__mobileKeyField.setVisible(true);
+                            me.__haveBtn.setVisible(false);
+                        }
+                    }, {
+                        xtype: 'box',
+                        html: '',
+                        width: 20
+                    },{
+                        xtype: 'button',
+                        name: 'change',
+                        text: wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_TEXT,
+                        formBind: true, //only enabled once the form is valid
+                        disabled: true,
+                        //scope: this,
+                        handler: function() {
+                            var form = this.up('form');
+                            var oldEmailField = form.down('[name=emailold]');
+                            var emailField = form.down('[name=email]');
+                            var phoneField = form.down('[name=phone]');
+                            var mobileKeyField = form.down('[name=mobileKey]');
+                            var captchaField = form.down('#captcha');
+                            
+                            if (!form.getForm().isValid()) {
+                                return;
+                            }
+
+                            form.setLoading(true);
+                            wowPortal.wow_Services.cmdAccountChangeEmail({
+                                oldEmail: oldEmailField.getValue(),
+                                email: emailField.getValue(),
+                                phone: phoneField.getValue(),
+                                mobileKey: mobileKeyField.getValue(),
+                                captcha: captchaField.getValue(),
+                                type: 'sms'
+                            }, function(response, provider) {
+                                form.setLoading(false);
+                                if('exception' === provider.type || true !== response.success) {
+                                } else {
+                                    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                }
+                                if (response.success) {
+                                    me.__mobileKeyField.setVisible(true);
+                                    me.__haveBtn.setVisible(false);
+                                }
+                                me.updateCaptcha();
+                            }, this);
+                        }
+                    }]
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__changeBtn.setDisabled(!valid);
+                    }
+                }
+            }]
+        });
+        this.callParent();
+
+        this.__changeBtn = this.down('[name=change]');
+        this.__captchaImg = this.down('#captcha-img');
+        this.__mobileKeyField = this.down('#mobileKey');
+        this.__haveBtn = this.down('#haveBtn');
+        this.__captchaField = this.down('#captcha');
+        this.updateCaptcha();
+        var me = this;
+        me.__mobileKeyField.setVisible(false);
+    },
+    updateCaptcha: function() {
+        this.__captchaImg.update('<img src="' + this.__captchaImgSrc + '?_nc=' + (new Date().getTime()) + '" width="125" height="30"/>');
+    }
+});

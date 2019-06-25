@@ -1,0 +1,179 @@
+Ext.define('wowPortal.module.AccountEmail', {
+    extend: 'wowPortal.module.Common',
+
+    layout: {
+        type: 'ux.center'
+    },
+    __captchaImgSrc: '/skins/app/images/password_key.jpg',
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                //title: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CHANGE_TITLE,
+                style: 'margin: 10px',
+                bodyPadding: 10,
+                width: 400,
+                padding: '40px 0',
+                items: [{
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'emailold',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_OLD_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'email',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_NEW_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    layout: 'hbox',
+                    style: 'margins: 0px',
+                    items: [{
+                        xtype: 'box',
+                        itemId: 'captcha-img',
+                        style: 'text-align: center; margins: 0px;'
+                    }, {
+                        xtype: 'button',
+                        itemId: 'refresh-captcha',
+                        text: '',
+                        scope: this,
+                        cls: 'refresh-captcha',
+                        iconCls: 'refresh-captcha-icon',
+                        handler: this.updateCaptcha
+                    }]
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'captcha',
+                    anchor: '',
+                    labelWidth: 200,
+                    width: 325,
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_CAPTCHA_LABEL,
+                    allowBlank: false,
+                    listeners:{
+                        change: function(field, newValue, oldValue){
+                            field.setValue(newValue.toUpperCase());
+                        }
+                    }
+                }, {
+                    xtype: 'container',
+                    layout: {
+                        type: 'hbox',
+                        pack: 'center'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        name: 'change',
+                        text: wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_TEXT,
+                        formBind: true, //only enabled once the form is valid
+                        disabled: true,
+                        //scope: this,
+                        handler: function() {
+                            var form = this.up('form');
+                            var oldEmailField = form.down('[name=emailold]');
+                            var emailField = form.down('[name=email]');
+                            var captchaField = form.down('#captcha');
+                            
+                            if (!form.getForm().isValid()) {
+                                return;
+                            }
+
+                            form.setLoading(true);
+                            wowPortal.wow_Services.cmdAccountChangeEmail({
+                                oldEmail: oldEmailField.getValue(),
+                                email: emailField.getValue(),
+                                captcha: captchaField.getValue(),
+                                type: 'email'
+                            }, function(response, provider) {
+                                form.setLoading(false);
+                                if('exception' === provider.type || true !== response.success) {
+                                    //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_ERROR);
+                                    //return;
+                                } else {
+                                    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                }
+                                me.updateCaptcha();
+                            }, this);
+                        }
+                    }]
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__changeBtn.setDisabled(!valid);
+                    }
+                }
+            }/*, {
+                xtype: 'form',
+                title: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_TITLE,
+                border: false,
+                width: 400,
+                padding: '40px 0 0 0',
+                items: [{
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'conf-email',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    labelWidth: 250,
+                    anchor: '100%',
+                    xtype: 'textfield',
+                    name: 'conf-key',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_KEY_LABEL,
+                    value: '',
+                    allowBlank: false
+                }],
+                buttons: [{
+                    name: 'change',
+                    text: wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_TEXT,
+                    formBind: true, //only enabled once the form is valid
+                    disabled: true,
+                    handler: function() {
+                        var form = this.up('form');
+                        if (!form.getForm().isValid()) {
+                            return;
+                        }
+                        var emailField = form.down('[name=conf-email]');
+                        var keyField = form.down('[name=conf-key]');
+
+                        this.setLoading(true);
+                        wowPortal.wow_Services.cmdAccountChangeEmailSubmit({
+                            email: emailField.getValue(),
+                            key: keyField.getValue()
+                        }, function(response, provider) {
+                            this.setLoading(false);
+                            if('exception' === provider.type || true !== response) {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                            } else {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_SUCCESS);
+                            }
+                        }, this);
+                    }
+                }]
+            }*/]
+        });
+        this.callParent();
+
+        this.__changeBtn = this.down('[name=change]');
+        this.__captchaImg = this.down('#captcha-img');
+        this.__captchaField = this.down('#captcha');
+        this.updateCaptcha();
+        var me = this;
+    },
+    updateCaptcha: function() {
+        this.__captchaImg.update('<img src="' + this.__captchaImgSrc + '?_nc=' + (new Date().getTime()) + '" width="125" height="30"/>');
+    }
+});

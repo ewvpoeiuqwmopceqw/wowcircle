@@ -1,0 +1,480 @@
+/*
+ * Module: Bonuses
+ */
+
+Ext.require([
+    'wowPortal.model.Bonuses'
+]);
+
+Ext.define('wowPortal.module.Bonuses', {
+    extend: 'wowPortal.module.Common',
+
+    __bonusCount: 0,
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.Bonuses',
+            autoLoad: true,
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdGetServiceList,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_BONUSES_HEADER_NAME,
+                    flex: 1,
+                    dataIndex: 'fname',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        var descr = record.get('fDescription');
+                        descr = descr ? ' ' + descr : '';
+                        return record.get('fname') + descr;
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_BONUSES_HEADER_COST,
+                    width: 90,
+                    align: 'right',
+                    dataIndex: 'fbonus',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        metaData.tdCls = 'cost-cell';
+                        return value;
+                    }
+                }, {
+                    xtype:'actioncolumn',
+                    sortable: false,
+                    hideable: false,
+                    //hidden: true,
+                    width: 30,
+                    align: 'center',
+                    items: [{
+                        icon: '/images/button/basket.png',
+                        tooltip: wowPortal.locale.MODULE_BONUSES_HEADER_BUY,
+                        scope: this,
+                        handler: this.__onActivateBonusClick
+                    }]
+                }],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_BONUSES_EMPTY_MSG,
+                    listeners: {
+                        scope: this,
+                        itemdblclick: this.__onRowDoubleClick
+                    }
+                }/*,
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_BUY_MOUNT_PANEL_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_BUY_MOUNT_PANEL_EMPTY_MSG
+                })*/
+            }]
+        });
+
+        this.callParent(arguments);
+        this.setLoading(true);
+        wowPortal.wow_Services.cmdGetBonusInfo(this.__onGetBonusInfoInfo, this);
+    },
+
+    __onGetBonusInfoInfo: function(result, provider) {
+        this.setLoading(false);
+
+        if ('exception' == provider.type) {
+            return;
+        }
+
+        this.__bonusCount = result.fcount;
+    },
+
+    __onRowDoubleClick: function(sm, record) {
+        wowPortal.module.Bonuses.activateBonus(record, this.__bonusCount);
+    },
+
+    __onActivateBonusClick: function(grid, rowIndex, colIndex) {
+        var record = grid.getStore().getAt(rowIndex);
+        wowPortal.module.Bonuses.activateBonus(record, this.__bonusCount);
+    },
+
+    statics: {
+        activateBonus: function(record, bonusCount, additionalCallback, additionalCallbackScope) {
+            if (record.isModel) {
+                record = record.data; // for processing from Manage module
+            }
+            bonusCount = bonusCount || 0; // TODO get bonuses from some thing
+
+            var descr = record.fDescription,
+                title = record.fname + (descr ? ' ' + descr : ''),
+                key = parseInt(record.fkey),
+                maxCount = 0,
+                minCount = 0;
+
+            switch (key) {
+                case 3: // buy title
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyTitle',
+                        title, //wowPortal.locale.BUY_TITLE_WINDOW_TITLE,
+                        wowPortal.wow_Services.cmdCharacterAddTitle,
+                        ['guid', 'titleId'], null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 4: // move character
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.MoveCharacter',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterMoveToAccount,
+                        ['guids', 'accountName'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+
+                case 5: // change nick name
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.CommonBuyWindow',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeNickName,
+                        ['guid'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 6: // buy profession
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyProfession',
+                        title, //wowPortal.locale.BUY_PROFESSION_WINDOW_TITLE,
+                        wowPortal.wow_Services.cmdCharacterAddProff,
+                        ['guid', 'proffId'], null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 7: // freeze
+                    maxCount = Math.floor(bonusCount / record.fbonus);
+                    if (maxCount <= 0) {
+                        Ext.Msg.alert(wowPortal.locale.COMMON_ALERT_CAPTION, wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_NOT_ENOUGHT_BONUSES);
+                        return;
+                    }
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.FreezeAccount',
+                        title,
+                        wowPortal.wow_Services.cmdAccountFreeze,
+                        ['days'], {
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 8:  // level up 0-39
+                case 9:  // level up 40-49
+                case 10: // level up 50-59
+                case 11: // level up 60-69
+                case 12: // level up 70-79
+                case 24: // level up 80-84
+                    var parts = record.fscope.split(',');
+                    minCount = parseInt(parts[0]);
+                    maxCount = parseInt(parts[1]);
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.LevelUp',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterLevelUp,
+                        ['serviceId', 'guid', 'level'], {
+                            serviceId: key,
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            minCount: minCount,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 13: // unmute
+                    maxCount = Math.floor(bonusCount / record.fbonus);
+                    if (maxCount <= 0) {
+                        Ext.Msg.alert(wowPortal.locale.COMMON_ALERT_CAPTION, wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_NOT_ENOUGHT_BONUSES);
+                        return;
+                    }
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.UnmuteAccount',
+                        title,
+                        wowPortal.wow_Services.cmdAccountUnmute,
+                        ['hours'], {
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 14: // add variouse reputations
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyReputation',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterAddReputation,
+                        ['guid', 'factionId', 'priceId'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 15: // reset instances cool down
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.CommonBuyWindow',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterInstancesCooldownReset,
+                        ['guid'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 17: // send message
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.SendMessage',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterSendMessage,
+                        ['receiver', 'subject', 'message'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 19: // unban
+                    maxCount = Math.floor(bonusCount / record.fbonus);
+                    if (maxCount <= 0) {
+                        Ext.Msg.alert(wowPortal.locale.COMMON_ALERT_CAPTION, wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_NOT_ENOUGHT_BONUSES);
+                        return;
+                    }
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.UnbanAccount',
+                        title,
+                        wowPortal.wow_Services.cmdAccountUnban,
+                        ['days'], {
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 20: // add 5000 honor points
+                case 21: // add 10000 honor points
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyByService',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterAddHonorPoints,
+                        ['serviceId', 'guid'], {
+                            serviceId: key,
+                            cost: record.fbonus
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 22: // add 1000 arena points
+                case 23: // add 500 arena points
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyByService',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterAddArenaPoints,
+                        ['serviceId', 'guid'], {
+                            serviceId: key,
+                            cost: record.fbonus
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 31: // change face or gender
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.CommonBuyWindow',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeFaceOrGender,
+                        ['guid'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 32: // change race
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.CommonBuyWindow',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeRace,
+                        ['guid', 'race'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+                case 1:  // buy gold
+                case 33: // buy gold 100
+                case 34: // buy gold 1000
+                case 35: // buy gold 10000
+                    maxCount = parseInt(record.fscope);
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyMoney',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterAddMoney,
+                        ['serviceId', 'guid'/*, 'count'*/], {
+                            serviceId: key,
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 36: // level up to 59
+                case 37: // level up to 69
+                case 38: // level up to 79
+                    maxCount = parseInt(record.fscope);
+
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.LevelUpTo',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterLevelSet,
+                        ['serviceId', 'guid'], {
+                            serviceId: key,
+                            bonusCount: bonusCount,
+                            cost: record.fbonus,
+                            maxCount: maxCount
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 40: // profession to max level
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyProfession',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterMaxProff,
+                        ['guid', 'proffId'], null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 51: // cmdCharacterAddCurrencyPoints
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.BuyByService',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterAddCurrencyPoints,
+                        ['serviceId', 'guid'], {
+                            serviceId: key,
+                            cost: record.fbonus
+                        },
+                        additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 52: // change faction
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.CommonBuyWindow',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeFaction,
+                        ['guid'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 53: // change faction A => H
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.ChangeFactionManualAH',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeFactionManual,
+                        ['guid', 'fromName', 'faction'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 54: // change faction H => A
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.ChangeFactionManualHA',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeFactionManual,
+                        ['guid', 'fromName', 'faction'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 55: // change race manual
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.ChangeRaceManual',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeRaceManual,
+                        ['guid', 'fromName'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                case 56: // change face manual
+                    this.__showBuyWindow(
+                        'wowPortal.module.dialog.ChangeFaceOrGenderManual',
+                        title,
+                        wowPortal.wow_Services.cmdCharacterChangeFaceOrGenderManual,
+                        ['guid', 'fromName'],
+                        null, additionalCallback, additionalCallbackScope
+                    );
+                    break;
+
+                default:
+                    Ext.Msg.alert('Not implemented ' + key);
+            }
+        },
+
+        __showBuyWindow: function(winClass, winTitle, directCallback, directArgs, windowConfig, additionalCallback, additionalCallbackScope) {
+            var config = {
+                title: winTitle,
+                callbackScope: this,
+                callback: function() {
+                    wowPortal.viewport.setLoading(true);
+                    directCallback(this.__prepareDirectArgs(directArgs, arguments), function(response, provider) {
+                        wowPortal.viewport.setLoading(false);
+                        if('exception' === provider.type || true !== response.result) {
+                            //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_BUY_MOUNT_BUY_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                            // do nothing - core show self window with exception
+                            return;
+                        } else {
+                            var message = !Ext.isEmpty(response.cost) ?
+                                Ext.String.format(wowPortal.locale.MODULE_BONUSES_BUY_SUCCESS_MESSAGE, response.cost) :
+                                (Ext.isEmpty(response.msg)?wowPortal.locale.COMMON_SUCCESS_MESSAGE:response.msg);
+                            Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, message);
+                            Ext.callback(additionalCallback, additionalCallbackScope);
+                        }
+                    }, this);
+                }
+            };
+            if (!Ext.isEmpty(windowConfig)) {
+                Ext.applyIf(config, windowConfig);
+            }
+            var buyWindow = Ext.create(winClass, config);
+
+            buyWindow.show();
+        },
+
+        __prepareDirectArgs: function(args, values) {
+            var result = {};
+            Ext.each(args, function(arg, index) {
+                result[arg] = values[index];
+            });
+
+            return result;
+        }
+    }
+});

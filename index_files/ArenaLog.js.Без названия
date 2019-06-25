@@ -1,0 +1,14 @@
+/*
+ * Model: Arena log
+ */
+
+Ext.define('wowPortal.model.ArenaLog', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'time', 
+        'realm', 
+        'type', 
+        'string'
+    ]
+});

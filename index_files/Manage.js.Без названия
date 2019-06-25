@@ -1,0 +1,758 @@
+/*
+* Module: Manage
+*/
+
+Ext.define('wowPortal.module.Manage', {
+    extend: 'wowPortal.module.Common',
+
+    autoScroll: true,
+    layout: 'anchor',
+    defaults: {
+        anchor: '100%'
+    },
+    cls: 'tscrollbar',
+    bodyCls: 'overview',
+    //padding: '0 15 0 0',
+
+    __refreshInterval: 600000,
+    __refreshTask: null,
+    __accountTypeId: null,
+    __isMuted: false,
+    __isLocked: false,
+    __isBanned: false,
+    __isFreezed: false,
+    __isOnline: false,
+    __bonusCount: 0,
+
+    initComponent: function() {
+        var infoPanel = {
+            title: wowPortal.locale.MODULE_MANAGE_INFO_TITLE,
+            collapsible: true,
+            animCollapse: false,
+            border: false,
+            minHeight: 300,
+            padding: '0 0 40px 0',
+            itemId: 'information',
+            items: [{
+                cls: 'main-information',
+                xtype: 'container',
+                ui: 'accountInfo',
+                layout: {
+                    type: 'table',
+                    columns: 4
+                },
+                //padding: '10px 20px 0px 20px',
+                items: [
+                    // 1 - type account row - delete
+                    // 1a - email
+                    {
+                        xtype: 'box',
+                        width: 130,
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_EMAIL_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_email.gif" width="20" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        //style: 'color: gold',
+                        cellCls: 'filler-cell',
+                        name: 'account-email',
+                        html: '-'
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        name: 'change-email-btn',
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_CHANGE_EMAIL_BTN,
+                        scope: this,
+                        handler: this.__onChangeEmailClick
+                    },
+                    // 1b - account mode
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_ACCOUNT_MODE_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',    
+                        itemId: 'account-mode-icon',
+                        html: ''
+                    }, {
+                        xtype: 'container',
+                        cellCls: 'filler-cell',
+                        items: [{
+                            xtype: 'box',
+                            itemId: 'account_mode',
+
+                            html: '-'
+                            }, {
+                                xtype: 'box',
+                                style: 'margin: 0 0 0 20px;',
+                                itemId: 'account_mode_period',
+                                html: ''
+                        }]
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_CHANGE_ACCOUNT_MODE_BTN,
+                        scope: this,
+                        handler: this.__onChangeAccountModeClick
+                    },
+                    {
+                        xtype: 'box',
+                        ui: 'accountInfo-empty-string',
+                        html: '&nbsp;',
+                        colspan: 4
+                    },
+                    // 2 - last login
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_LAST_LOGIN_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_last_login.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        style: 'color: gold',
+                        cellCls: 'filler-cell',
+                        name: 'last-login',
+                        html: '-',
+                        colspan: 2
+                    },
+                    {
+                        xtype: 'box',
+                        hidden: true,
+                        cellCls: 'name',
+                        itemId: 'acc-sale-warning',
+                        html: '&nbsp;',
+                        style: 'padding-bottom: 5px',
+                        colspan: 4
+                    },
+                    // 3 - ip
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_LAST_IP_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_last_ip.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        style: 'color: gold',
+                        cellCls: 'filler-cell',
+                        name: 'last-ip',
+                        html: '-',
+                        colspan: 2
+                    },
+                    {
+                        xtype: 'box',
+                        ui: 'accountInfo-empty-string',
+                        html: '&nbsp;',
+                        colspan: 4
+                    },
+                    // Mobile
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_MOBILE_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_mobile.png" width="18" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        style: 'color: gold',
+                        cellCls: 'filler-cell',
+                        name: 'mobile-locked',
+                        html: '-'
+                    }, {
+                        xtype: 'container',
+                        items: [{
+                            xtype: 'button',
+                            margins: '0 0 0 20px',
+                            name: 'mobile-lock-btn',
+                            hidden: true,
+                            width: 130,
+                            text: wowPortal.locale.MODULE_MANAGE_INFO_MOBILE_LOCK_ACCOUNT_BTN,
+                            scope: this,
+                            handler: this.__onMobileLockAccountClick
+                            }, {
+                                xtype: 'button',
+                                margins: '0 0 0 20px',
+                                name: 'mobile-unlock-btn',
+                                hidden: true,
+                                width: 130,
+                                text: wowPortal.locale.MODULE_MANAGE_INFO_MOBILE_UNLOCK_ACCOUNT_BTN,
+                                scope: this,
+                                handler: this.__onMobileUnlockAccountClick
+                        }]
+                    },
+                    // 4 - lock - deleted
+                    // 5 - ban
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_BANNED_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_banned.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'container',
+                        cellCls: 'filler-cell',
+                        items: [{
+                            xtype: 'box',
+                            name: 'banned',
+                            html: '-'
+                            }, {
+                                xtype: 'box',
+                                margins: '0 0 0 20px',
+                                name: 'banned-to',
+                                html: ''
+                        }]
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        name: 'unban-btn',
+                        disabled: true,
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_UNBAN_ACCOUNT_BTN,
+                        scope: this,
+                        bonusId: 19,
+                        handler: this.__onBonusActionClick
+                    },
+                    // 6 - ban reason
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        name: 'banned-reason-label',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_BAN_REASON
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        name: 'banned-reason-icon',
+                        html: '<img src="/images/manage/icon_banned.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'filler-cell',
+                        colspan: 2,
+                        name: 'banned-reason',
+                        html: ''
+                    },
+                    // 7 - mute
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_MUTED_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_muted.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'container',
+                        cellCls: 'filler-cell',
+                        items: [{
+                            xtype: 'box',
+                            name: 'muted',
+                            html: '-'
+                            }]
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        name: 'unmute-btn',
+                        disabled: true,
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_UNMUTE_ACCOUNT_BTN,
+                        scope: this,
+                        bonusId: 13,
+                        handler: this.__onBonusActionClick
+                    },
+                    // 8 - online
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_ONLINE_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_online.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'filler-cell',
+                        colspan: 2,
+                        name: 'online',
+                        html: '-'
+                    },
+                    // 9 - freeze
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_FREEZED_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_freezed.gif" width="18" height="18" />'
+                    }, {
+                        xtype: 'container',
+                        cellCls: 'filler-cell',
+                        items: [{
+                            xtype: 'box',
+                            name: 'freezed',
+                            html: '-'
+                            }, {
+                                xtype: 'box',
+                                margins: '0 0 0 20px',
+                                name: 'freezed-to',
+                                html: ''
+                        }]
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        name: 'freeze-btn',
+                        disabled: true,
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_FREEZE_ACCOUNT_BTN,
+                        scope: this,
+                        bonusId: 7,
+                        handler: this.__onBonusActionClick
+                    },
+                    // 9 - bonuses
+                    {
+                        xtype: 'box',
+                        cellCls: 'name',
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_BONUS_COUNT_LABEL
+                    }, {
+                        xtype: 'box',
+                        cellCls: 'icon',
+                        html: '<img src="/images/manage/icon_gold.gif" width="21" height="21" />'
+                    }, {
+                        xtype: 'box',
+                        style: 'color: gold',
+                        cellCls: 'filler-cell',
+                        name: 'bonus-count',
+                        html: '-'
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        width: 130,
+                        text: wowPortal.locale.MODULE_MANAGE_INFO_DONATE_BTN,
+                        scope: this,
+                        handler: this.__onDonateClick
+                }]
+            }]
+        };
+
+        var gridPanel = {
+            title: wowPortal.locale.MODULE_MANAGE_CHARACTERS_LIST_TITLE,
+            border: false,
+            collapsible: false,
+            xtype: 'gridpanel',
+            //                height: 300,
+            itemId: 'characters-grid',
+            loadMask: false,
+            //autoScroll: true,
+            store: {
+                type: 'direct',
+                model: wowPortal.model.Characters,
+                remoteSort: false,
+                autoLoad: false,
+                sorters: [{
+                    property: 'name',
+                    direction: 'ASC'
+                }],
+                directFn: wowPortal.wow_Services.cmdGetCharactersList,
+                listeners: {
+                    scope: this,
+                    load: {
+                        fn: function(store, records, successful, operation, eOpts) {
+                            this.ownerCt.doLayout();
+                        },
+                        delay: 1
+                    }
+                }
+            },
+            columns: [{
+					dataIndex: 'name',
+					text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+					flex: 1,
+					renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<a href="javascript:void(0)">' + value + '</a>';
+                    }
+                }, {
+                    dataIndex: 'faction',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+                    width: 65,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'race',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 45,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'class',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 45,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'level',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 60
+                }, {
+                    dataIndex: 'totaltime',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+                    width: 90
+            }],
+            viewConfig: {
+                stripeRows: true,
+                loadMask: false,
+                emptyText: wowPortal.locale.COMMON_CHARACTERS_GRID_EMPTY_MSG
+            },
+            listeners: {
+                scope: this,
+                itemdblclick: this.__onCharacterRowDblClick
+            },
+            listeners: {
+                scope: this,
+                itemdblclick: this.__onCharacterRowDblClick,
+				cellclick: function(gridView, htmlElement, columnIndex, dataRecord){
+					if (columnIndex == 0) {
+						Ext.create('wowPortal.module.dialog.CharView', {
+							guid: dataRecord.get('guid')
+						}).show();
+					}
+				}
+            },
+            bbar: ['->', {
+                xtype: 'container',
+                region: 'south',
+                style: 'width: 100%; text-align: right;',
+                html: wowPortal.locale.MODULE_MANAGE_CHARACTERS_LIST_HINT
+            }]
+        };
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'container',
+                autoEl: 'div',
+                items: [infoPanel, gridPanel]
+            }]
+        });
+
+        /*Ext.apply(this, {
+        items: [{
+        xtype: 'box',
+        autoEl: 'div',
+        cls: 'scrollbar',
+        html: '<div class="track"><div class="thumb"><div class="end"></div></div></div>'
+        }, {
+        xtype: 'container',
+        autoEl: 'div',
+        cls: 'viewport',
+        items: [{
+        xtype: 'container',
+        autoEl: 'div',
+        cls: 'overview',
+        items: [infoPanel, gridPanel]
+        }]
+        }]
+        });*/
+
+        this.callParent(arguments);
+
+        this.__accountEmailField = this.down('[name=account-email]');
+
+        this.__accountModeIcon = this.down('#account-mode-icon');
+        this.__accountModeField = this.down('#account_mode');
+        this.__accountModePeriodField = this.down('#account_mode_period');
+
+        this.__lastloginField = this.down('[name=last-login]');
+        this.__accountSaleWarning = this.down('#acc-sale-warning');        
+        this.__lastIpField = this.down('[name=last-ip]');
+
+        this.__mobileLockedField = this.down('[name=mobile-locked]');
+        //        this.__mobileLockedToField = this.down('[name=mobile-locked-to]');
+        this.__mobileLockBtn = this.down('[name=mobile-lock-btn]');
+        this.__mobileUnlockBtn = this.down('[name=mobile-unlock-btn]');
+
+        this.__bannedField = this.down('[name=banned]');
+        this.__bannedToField = this.down('[name=banned-to]');
+        this.__unbanBtn = this.down('[name=unban-btn]');
+        this.__bannedReasonField = this.down('[name=banned-reason]');
+        this.__bannedReasonIcon = this.down('[name=banned-reason-icon]');
+        this.__bannedReasonLabel = this.down('[name=banned-reason-label]');
+
+        this.__mutedField = this.down('[name=muted]');
+        this.__unmuteBtn = this.down('[name=unmute-btn]');
+
+        this.__onlineField = this.down('[name=online]');
+
+        this.__freezedField = this.down('[name=freezed]');
+        this.__freezedToField = this.down('[name=freezed-to]');
+        this.__freezeBtn = this.down('[name=freeze-btn]');
+
+        this.__bonusCountField = this.down('[name=bonus-count]');
+        this.__infoPanel = this.down('#information');
+        this.__charactersGrid = this.down('#characters-grid');
+
+        this.on('afterrender', function() {
+            this.__charactersGrid.getStore().load();
+            this.__refreshGeneralInfo();
+            }, this);
+
+        //this.__refreshTask = new Ext.util.DelayedTask(this.refreshAccountInfo, this);
+
+        this.on('destroy', this.__onDestroy, this);
+    },
+
+    refreshAccountCharacterList: function() {
+        this.__charactersGrid.getStore().load();
+    },
+
+    refreshGeneralAccountInfo: function() {
+        this.__refreshGeneralInfo();
+    },
+
+    __refreshGeneralInfo: function() {
+        //this.__infoPanel.setLoading(true);
+        wowPortal.wow_Services.cmdGetGeneralInfo(this.__onGetGeneralInfo, this);
+
+        //this.__refreshTask.delay(this.__refreshInterval);
+    },
+
+    __onDestroy: function() {
+        if (this.__refreshTask) {
+            this.__refreshTask.cancel();
+        }
+    },
+
+    __onCharacterRowDblClick: function(sm, record) {
+        var name = record.get('name');
+        var title = Ext.String.format(wowPortal.locale.MODULE_MANAGE_DELETE_CHARACTER_PROMPT_TITLE, name);
+        Ext.Msg.prompt(title, wowPortal.locale.MODULE_MANAGE_DELETE_CHARACTER_PROMPT, function(btn, text) {
+            if (btn == 'ok' && text === 'DELETE')
+            {
+                if (this.__isMobileLocked) {
+                  Ext.create('wowPortal.module.DeleteCharacter', {
+                    deleteByEmail: function (win) {
+                      wowPortal.wow_Services.cmdDeleteCharacter({ guid: record.get('guid') },
+                          function(response){
+                              Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                          }, this
+                      );
+                     },
+                     deleteBySms: function () {
+                       
+                       Ext.Msg.prompt(wowPortal.locale.MODULE_SMS_CONFIRM, wowPortal.locale.MODULE_SMS_CONFIRM_PHONE, function(btn, phone) {
+                               if (btn == 'ok') {
+                                       wowPortal.wow_Services.cmdDeleteCharacter({guid: record.get('guid'), phone: phone, by_sms: true },
+                                               function(response, provider){console.log(response)
+                                                       if('exception' === provider.type || true !== response.success) {
+                                                               Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                                       }
+                                                       if (response.success) {
+                                                               var win = Ext.create('wowPortal.module.dialog.MobileConfirm', {
+                                                                       callbackScope: this,
+                                                                       callback: function (code) {
+                                                                               wowPortal.wow_Services.cmdDeleteCharacter({guid: record.get('guid'), phone: phone, mobileKey: code},
+                                                                                       function(response){
+                                                                                               Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                                                                       }
+                                                                               );
+                                                                       },
+                                                                       guid: record.get('guid')
+                                                               });
+ 
+                                                               win.show();
+                                                       }
+                                               }, this
+                                       );
+                               }
+                       }, this);
+                       
+                     }
+                   }).show();
+                } else {
+                  wowPortal.wow_Services.cmdDeleteCharacter({guid: record.get('guid')},
+                      function(response){
+                          Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                      }, this
+                  );
+                }
+            }
+        }, this);
+    },
+
+    __onMobileLockAccountClick: function(btn) {
+        var win = Ext.create('wowPortal.module.dialog.MobileAccept', {
+            callbackScope: this,
+            callback: function() {
+            }
+        });
+        win.show();
+    },
+
+    __onMobileUnlockAccountClick: function(btn) {
+        var win = Ext.create('wowPortal.module.dialog.MobileUnlock', {
+            callbackScope: this,
+            callback: function(phone, mobileKey, captcha){
+                wowPortal.wow_Services.cmdSmsMobileUnlock(
+                    {phone: phone, mobileKey: mobileKey, captcha: captcha},
+                    function(response, provider) {                        
+                        win.updateCaptcha();
+                        if ('exception' === provider.type) {
+                            return;
+                        }
+                        if (response.close)
+                            win.close();
+                        win.showMobileKeyField();
+                        Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                    },
+                    this
+                );
+            }
+        });
+        win.show();
+    },
+
+    __onBonusActionClick: function(btn) {
+        this.setLoading(true);
+        wowPortal.wow_Services.cmdGetServiceInfo({id: btn.bonusId}, this.__onGetBonusServiceInfo, this);
+    },
+
+    __onGetBonusServiceInfo: function(result, provider) {
+        this.setLoading(false);
+        if ('exception' === provider.type) {
+            return;
+        }
+        wowPortal.module.Bonuses.activateBonus(result, this.__bonusCount, this.__bonusActivated, this);
+    },
+
+    __bonusActivated: function() {
+        //this.__refreshGeneralInfo();
+    },
+
+    __onDonateClick: function(btn) {
+        wowPortal.viewport.navigateTo('payment');
+    },
+
+    __onChangeEmailClick: function(btn)
+    {
+        /*var win = Ext.create('wowPortal.module.dialog.ChangeAccountEmail', {
+            callbackScope: this,
+            callback: function(_email, _oldEmail) {
+                wowPortal.wow_Services.cmdAccountChangeEmail({email: _email, oldEmail: _oldEmail}, 
+                    function(response, provider) {
+                        if(response)
+                        {
+                            Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                        }
+                    }
+                    , this);
+            }
+        });
+        win.show();*/
+        Ext.create('wowPortal.module.ChangeEmail').show();
+    },
+
+    __onChangeAccountModeClick: function(btn) {
+        var win = Ext.create('wowPortal.module.dialog.ChangeAccountMode', {
+            modeId: this.__accountModeId,
+            callbackScope: this,
+            callback: function(modeId, from, duration) {
+                this.setLoading(true);
+                wowPortal.wow_Services.cmdAccountSetMode({mode: modeId, from: from, duration: duration}, function(response, provider) {
+                    this.setLoading(false);
+                    if('exception' === provider.type || true !== response.success) {
+                    } else {
+                        Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                    }
+                    }, this);
+            }
+        });
+        win.show();
+    },
+
+    __onGetGeneralInfo: function(response, provider) {
+        //this.__infoPanel.setLoading(false);
+
+        if ('exception' == provider.type) {
+            return;
+        }
+
+        this.__accountEmailField.update(response.accountEmail);
+
+        wowPortal.data.accountModeId = this.__accountModeId = response.accountModeId;
+        this.__accountModeName = response.accountModeName;
+        this.__accountModeFrom = response.accountModeFrom;
+        this.__accountModeTo = response.accountModeTo;
+        this.__accountModeActive = response.accountModeActive;
+        this.__accountModeIcon.update('<img src="/images/manage/icon_acc_mode_' + (0 == this.__accountModeId ? 0 : 1) + '.png" />');
+        this.__accountModeField.update(this.__accountModeName);
+        if (0 != this.__accountModeId) {
+            this.__accountModePeriodField.update(Ext.String.format(wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_PARIOD_LABEL_TPL, this.__accountModeFrom, this.__accountModeTo, (1 == this.__accountModeActive ? wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_1 : wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_0)));
+        }
+        else {
+            this.__accountModePeriodField.update('');
+        }
+
+        if (response.daysBeforeSale) {
+            this.__accountSaleWarning.update(Ext.String.format(wowPortal.locale.MODULE_MANAGE_INFO_ACC_SALE_WARNING, response.daysBeforeSale));
+            this.__accountSaleWarning.show();
+        } else {
+            this.__accountSaleWarning.hide();
+        }
+        this.__lastloginField.update(response.lastLogon);
+        this.__lastIpField.update(response.lastIP);
+
+        wowPortal.data.isMobileLocked = this.__isMobileLocked = 0 != response.isMobileLocked;
+        this.__mobileLockedField.update(response.mobileInfo);
+        //        this.__lockedToField.update(response.isLocked ? '(' + response.isLockedTo + ')' : '');
+        this.__mobileUnlockBtn.setVisible(this.__isMobileLocked);
+        this.__mobileLockBtn.setVisible(!this.__isMobileLocked);
+
+
+        this.__isBanned = (0 != response.isBanned && !Ext.isEmpty(response.isBanned));
+        this.__bannedField.update(this.__isBanned ? wowPortal.locale.COMMON_LABEL_YES : wowPortal.locale.COMMON_LABEL_NO);
+        this.__bannedToField.update(this.__isBanned ? Ext.String.format(wowPortal.locale.MODULE_MANAGE_TILL_TPL, response.isBannedTo, response.isBannedOn) : '');
+        this.__bannedReasonField.update(this.__isBanned ? Ext.String.format(wowPortal.locale.MODULE_MANAGE_BANNED_REASON_TPL, response.isBannedReason, response.isBannedBy) : '');
+        this.__bannedReasonField.setVisible(this.__isBanned);
+        this.__bannedReasonIcon.setVisible(this.__isBanned);
+        this.__bannedReasonLabel.setVisible(this.__isBanned);
+        this.__unbanBtn.setDisabled(!this.__isBanned);
+
+        this.__isMuted = (0 != response.isMutedTo);
+        this.__mutedField.update(this.__isMuted ? 
+            Ext.String.format(wowPortal.locale.MODULE_MANAGE_MUTE_REASON_TPL, wowPortal.locale.COMMON_LABEL_YES, response.isMutedTime,response.isMutedTo,response.muteReason,response.muteBy)
+            : wowPortal.locale.COMMON_LABEL_NO);
+        this.__unmuteBtn.setDisabled(!this.__isMuted);
+
+        this.__isOnline = 0 != response.isOnline;
+        this.__onlineField.update(this.__isOnline ? wowPortal.locale.COMMON_LABEL_YES : wowPortal.locale.COMMON_LABEL_NO);
+
+        this.__isFreezed = 0 != response.isFreezed;
+        this.__freezedField.update(this.__isFreezed ? wowPortal.locale.COMMON_LABEL_YES : wowPortal.locale.COMMON_LABEL_NO);
+        this.__freezedToField.update(this.__isFreezed ? Ext.String.format(wowPortal.locale.MODULE_MANAGE_TILL_TPL, response.isFreezedTo) : '');
+        this.__freezeBtn.setDisabled(this.__isFreezed);
+
+        this.__bonusCount = response.bonuses;
+        var bonusesStr = Ext.util.Format.number(this.__bonusCount, '0,0.');
+        this.__bonusCountField.update(bonusesStr);
+        wowPortal.viewport.setBalance(bonusesStr);
+    }
+});

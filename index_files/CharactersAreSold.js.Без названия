@@ -1,0 +1,19 @@
+/*
+ * Model: Characters are sold
+ */
+
+Ext.define('wowPortal.model.CharactersAreSold', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        'f_characterGUID',
+        'fclass',
+        'fkey',
+        'flevel',
+        'fname',
+        'frace',
+        'fstartPrice',
+        'ftotalTime',
+        'raceFace'
+    ]
+});

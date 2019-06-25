@@ -1,0 +1,16 @@
+/*
+ * Model: Banned Accounts
+ */
+
+Ext.define('wowPortal.model.BannedAccounts', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'id',
+        'username',
+        'bandate',
+        'unbandate',
+        'banreason',
+        'bannedby'
+    ]
+});

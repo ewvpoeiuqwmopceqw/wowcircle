@@ -1,0 +1,75 @@
+/*
+ * Dialog: Lock account
+ */
+
+Ext.apply(Ext.form.field.VTypes, {
+    IPAddress:  function(v) {
+        return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v);
+    },
+    IPAddressText: 'Must be a numeric IP address',
+    IPAddressMask: /[\d\.]/i
+});
+
+Ext.define('wowPortal.module.dialog.LockAccount', {
+    extend: 'Ext.Window',
+
+    title: wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_TITLE,
+
+    initComponent: function() {
+
+        Ext.apply(this, {
+            width: 350,
+            autoHeight: true,
+            modal: true,
+            resizable: false,
+
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                defaults: {
+                    labelWidth: 160
+                },
+                items: [{
+                    xtype: 'displayfield',
+                    itemId: 'cost',
+                    value: this.lockCost,
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_COST_LABEL
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'ip',
+                    vtype: 'IPAddress',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_IP_LABEL,
+                    value: this.lockIP,
+                    allowBlank: false
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__okButton.setDisabled(!valid);
+                    }
+                }
+            }],
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                handler: function() {
+                    var ip = this.__ipField.getValue();
+                    this.callback.call(this.callbackScope || window, ip);
+                    this.close();
+                }
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__form = this.items.get('form');
+        this.__okButton = this.down('#ok');
+        this.__ipField = this.down('#ip');
+    }
+});

@@ -1,0 +1,88 @@
+Ext.require([
+    'wowPortal.model.ArenaLog'
+]);
+
+Ext.define('wowPortal.module.ArenaLog', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.ArenaLog',
+            autoLoad: true,
+            remoteSort: true,
+            remoteFilter: true,
+            sorters: [{
+                property : 'time',
+                direction: 'ASC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdArenaLog,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    //idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_ARENA_LOG_HEADER_TIME,
+                    width: 100,
+                    dataIndex: 'time',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ARENA_LOG_HEADER_REALM,
+                    hideable: false,
+                    hidden: true,
+                    width: 150,
+                    dataIndex: 'realm',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ARENA_LOG_HEADER_TYPE,
+                    hideable: false,
+                    hidden: true,
+                    width: 150,
+                    dataIndex: 'type',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ARENA_LOG_HEADER_STRING,
+                    flex: 1,
+                    dataIndex: 'string',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }],
+
+                plugins: [Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_ARENA_LOG_EMPTY_MSG
+                },
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_ARENA_LOG_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_ARENA_LOG_EMPTY_MSG
+                })
+            }]
+        });
+
+        this.callParent(arguments);
+    }
+});

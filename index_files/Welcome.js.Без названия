@@ -1,0 +1,13 @@
+/*
+ * Module: Welcome
+ */
+Ext.define('wowPortal.module.Welcome', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        Ext.apply(this, {
+            html: wowPortal.locale.MODULE_WELCOME_TEXT
+        });
+        this.callParent(arguments);
+    }
+});

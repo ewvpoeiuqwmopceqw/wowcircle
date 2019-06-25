@@ -1,0 +1,18 @@
+/*
+ * Model: Servers
+ */
+
+Ext.define('wowPortal.model.TransferServers', {
+    extend: 'Ext.data.Model',
+    // Define the model for a State
+
+    idProperty: 'fkey',
+
+    fields: [
+        {type: 'string', name: 'fkey'},
+        {type: 'string', name: 'fname'},
+        {type: 'boolean', name: 'selected'},
+        {type: 'string', name: 'fdescription'},
+        {type: 'string', name: 'fprice'}
+    ]
+});

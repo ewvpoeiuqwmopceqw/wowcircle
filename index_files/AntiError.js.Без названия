@@ -1,0 +1,112 @@
+Ext.require([
+    'wowPortal.model.Characters'
+]);
+
+Ext.define('wowPortal.module.AntiError', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.Characters',
+            autoLoad: true,
+            //root: 'data',
+            idProperty: 'guid',
+            directFn: wowPortal.wow_Services.cmdGetCharactersList
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    //
+                    //renderer: function(value, metaData, record, colIndex, store, view) {
+                    //    var url = Ext.String.format('/wowarmory/character-sheet.xml?r={0}&cn={1}', wowPortal.data.realm, value);
+                    //    return '<a href="' + url + '" target="_blank">' + value + '</a>';
+                    //},
+                    flex: 1,
+                    dataIndex: 'name'
+                },{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 50,
+                    align: 'center',
+                    dataIndex: 'class',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                },{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 50,
+                    align: 'center',
+                    dataIndex: 'race',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                },{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 65,
+                    dataIndex: 'level'
+                },{
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+                    width: 95,
+                    dataIndex: 'totaltime'
+                },{
+                    xtype:'actioncolumn',
+                    hideable: false,
+                    width: 30,
+                    align: 'center',
+                    items: [{
+                        icon: '/images/button/basket.png',
+                        tooltip: wowPortal.locale.MODULE_ANTI_ERROR_HEADER_ANTI_ERROR,
+                        scope: this,
+                        handler: this.__onAntiErrorCharacterClick
+                    }]
+                }],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_ANTI_ERROR_EMPTY_MSG,
+                    listeners: {
+                        scope: this,
+                        itemdblclick: this.__onRowDoubleClick
+                    }
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+    },
+
+    __onRowDoubleClick: function(sm, rec) {
+        this.__antiErrorCharacter(rec);
+    },
+
+    __onAntiErrorCharacterClick: function(grid, rowIndex, colIndex) {
+        var rec = grid.getStore().getAt(rowIndex);
+        this.__antiErrorCharacter(rec);
+    },
+
+    __antiErrorCharacter: function(rec) {
+        Ext.Msg.confirm(wowPortal.locale.MODULE_ANTI_ERROR_CONFIRMATION_TITLE,
+            Ext.String.format(wowPortal.locale.MODULE_ANTI_ERROR_CONFIRMATION, rec.get('name')),
+            function(button) {
+                if (button == 'yes') {
+                    this.setLoading(true);
+                    wowPortal.wow_Services.cmdCharacterAntiError(
+                        {guid: rec.get('guid')},
+                        function(response, provider) {
+                            this.setLoading(false);
+                            if('exception' === provider.type || true !== response) {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_ANTI_ERROR_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                            } else {
+                                Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_ANTI_ERROR_SUCCESS);
+                            }
+                    }, this);
+                }
+            }, this);
+    }
+});

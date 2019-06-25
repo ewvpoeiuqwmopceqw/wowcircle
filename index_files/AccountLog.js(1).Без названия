@@ -1,0 +1,130 @@
+Ext.require([
+    'wowPortal.model.AccountLog'
+]);
+
+Ext.define('wowPortal.module.AccountLog', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        this.__store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.AccountLog',
+            autoLoad: false,
+            remoteSort: true,
+            remoteFilter: true,
+            sorters: [{
+                property : 'fdate',
+                direction: 'ASC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdAccountLogs,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    //idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xype: 'container',
+                layout: 'hbox',
+                style: 'margin: 3px 5px;',
+                items: [{
+                    xtype: 'numberfield',
+                    itemId: 'account-field',
+                    fieldLabel: wowPortal.locale.MODULE_ACCOUNT_LOG_ACCOUNT_LABEL,
+                    labelWidth: 80,
+                    minVal: 0,
+                    maxVal: 99999999,
+                    allowBlank: false,
+                    width: 200,
+                    value: ''
+                }, {
+                    xtype: 'button',
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_FILTER,
+                    scope: this,
+                    style: 'margin-left: 5px;',
+                    handler: function() {
+                        if (!this.__accountField.isValid()) {
+                            return;
+                        }
+                        var account = this.__accountField.getValue();
+                        var store = this.__grid.getStore();
+                        store.getProxy().extraParams = {account: account};
+                        store.load();
+                    }
+                }]
+            }, {
+                xtype: 'gridpanel',
+                itemId: 'grid',
+                store: this.__store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_DATE,
+                    width: 100,
+                    dataIndex: 'fdate',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_SERVER,
+                    width: 150,
+                    dataIndex: 'f_server',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_TYPE,
+                    width: 120,
+                    dataIndex: 'ftype',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_IP,
+                    width: 120,
+                    dataIndex: 'fip',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_MESSAGE,
+                    flex: 1,
+                    dataIndex: 'fmessage',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_SCOPEID,
+                    width: 100,
+                    dataIndex: 'fscopeId',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }],
+
+                plugins: [Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_ACCOUNT_LOG_EMPTY_MSG
+                },
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: this.__store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_ACCOUNT_LOG_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_ACCOUNT_LOG_EMPTY_MSG
+                })
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__grid = this.down('#grid');
+        this.__accountField = this.down('#account-field');
+    }
+});

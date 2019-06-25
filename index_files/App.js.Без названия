@@ -1,0 +1,112 @@
+Ext.Loader.setConfig({
+    enabled: true
+});
+Ext.supports.CSS3BorderRadius = false;
+
+Ext.define('Ext.ux.layout.Center', {
+    extend: 'Ext.layout.container.Fit',
+    alias: 'layout.ux.center',
+    // private
+    setItemSize: function (item, width, height) {
+        this.owner.addCls('ux-layout-center');
+        item.addCls('ux-layout-center-item');
+        if (height > 0) {
+            if (width) {
+                width = item.width;
+                if (Ext.isNumber(item.widthRatio)) {
+                    width = Math.round(this.owner.el.getWidth() * item.widthRatio);
+                }
+            }
+            item.setSize(width, height);
+            item.margins.left = Math.round((this.owner.el.getWidth() - width) * 0.5);
+        }
+    }
+});
+
+Ext.application({
+    name: 'wowPortal',
+    appFolder: '.jslib/app',
+
+    launch: function() {
+        Ext.tip.QuickTipManager.init();
+        Ext.Direct.addProvider( wowPortal.REMOTING_API );
+        wowPortal.viewport = Ext.create('wowPortal.component.Viewport', {});
+        Ext.create('Ext.Container', {
+            //id: 'wow-viewport',
+            //cls: 'wow-viewport',
+            layout: 'ux.center',
+            items: [wowPortal.viewport],
+            renderTo: Ext.getBody()
+        });
+    }
+});
+
+Ext.direct.Manager.on('message', function(e){
+    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, e.data);
+});
+
+Ext.direct.Manager.on('characterListUpdateEvent', function(e){
+    if (wowPortal.viewport)
+        wowPortal.viewport.refreshAccountCharacterList();
+});
+
+Ext.direct.Manager.on('generalInfoUpdateEvent', function(e){
+    if (wowPortal.viewport)
+        wowPortal.viewport.refreshGeneralAccountInfo();
+});
+
+Ext.direct.Manager.on('serverMessage', function(e){
+    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, e.message);
+});
+
+Ext.apply(Ext.form.field.VTypes, {
+    daterangeText: 'Invalid dates period',
+    daterangeMask: /.*/,
+    daterange: function(val, field) {
+        var date = field.parseDate(val);
+        if (!date) {
+            return false;
+        }
+        if (field.endDateField && (!this.dateRangeMin || (date.getTime() != this.dateRangeMin.getTime()))) {
+            var end = Ext.getCmp(field.endDateField);
+            end.setMinValue(date);
+            if (!end.validate()) {
+                end.setValue(date);
+            }
+            this.dateRangeMin = date;
+        } 
+        return true;
+    }
+});
+
+Ext.direct.Manager.on('exception', function(e){
+    switch (e.code) {
+        case 1: // access deny
+            if (wowPortal.viewport) {
+                //wowPortal.viewport.logout();
+            }
+            break;
+        case 2:  //unauthorized
+            if (wowPortal.viewport) {
+                wowPortal.viewport.logout();
+            }
+            break;
+        default:
+            break;
+    }
+
+    Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, e.message);
+});
+
+jQuery.expr[':'].regex = function(elem, index, match) {
+    var matchParams = match[3].split(','),
+        validLabels = /^(data|css):/,
+        attr = {
+            method: matchParams[0].match(validLabels) ? 
+                        matchParams[0].split(':')[0] : 'attr',
+            property: matchParams.shift().replace(validLabels,'')
+        },
+        regexFlags = 'ig',
+        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+    return regex.test(jQuery(elem)[attr.method](attr.property));
+}

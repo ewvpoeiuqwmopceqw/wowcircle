@@ -1,0 +1,14 @@
+/*
+ * Module: Rules
+ */
+Ext.define('wowPortal.module.Rules', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        Ext.apply(this, {
+            cls: 'ordered-list',
+            html: wowPortal.locale.MODULE_RULES_TEXT
+        });
+        this.callParent(arguments);
+    }
+});

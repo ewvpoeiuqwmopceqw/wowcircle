@@ -1,0 +1,107 @@
+/*
+ * Dialog: Level up
+ */
+
+Ext.define('wowPortal.module.dialog.LevelUp', {
+    extend: 'wowPortal.module.dialog.CommonBuyWindow',
+
+    width: 600,
+    height: 400,
+    __currentLevel: 0,
+
+    initComponent: function() {
+        this.callParent(arguments);
+
+        this.__countField = this.add({
+            xtype: 'form',
+            itemId: 'form',
+            region: 'north',
+            defaults: {
+                labelWidth: 210
+            },
+            items: [{
+                xtype: 'displayfield',
+                itemId: 'cost',
+                fieldLabel: wowPortal.locale.BUY_LEVEL_UP_WINDOW_COST_LABEL,
+                value: this.cost
+            }, {
+                xtype: 'numberfield',
+                itemId: 'count',
+                fieldLabel: wowPortal.locale.BUY_LEVEL_UP_WINDOW_LEVEL_LABEL,
+                value: 0,
+                disabled: true,
+                minValue: this.minCount,
+                maxValue: this.maxCount,
+                allowBlank: false,
+                listeners: {
+                    scope: this,
+                    change: function(field, newValue, oldValue, eOpts) {
+                        this.__totalCostField.setValue(this.cost * (newValue - this.__currentLevel));
+                    }
+                }
+            }, {
+                xtype: 'displayfield',
+                disabled: true,
+                itemId: 'total-cost',
+                fieldLabel: wowPortal.locale.BUY_LEVEL_UP_WINDOW_TOTAL_COST_LABEL
+            }]
+        });
+
+        this.__hint = this.add({
+            xtype: 'box',
+            itemId: 'hint',
+            region: 'south',
+            html: Ext.String.format(wowPortal.locale.BUY_LEVEL_UP_WINDOW_HINT, this.minCount, this.maxCount)
+        });
+
+        this.__countField = this.down('#count');
+        this.__hintPanel = this.down('#hint');
+        this.__costField = this.down('#cost');
+        this.__totalCostField = this.down('#total-cost');
+
+        this.__charactesGrid.on('selectionchange', function(view, records) {
+            this.__currentLevel = records[0].get('level');
+
+            if (this.__currentLevel > this.maxCount || this.__currentLevel < this.minCount) {
+                this.__countField.setDisabled(true);
+                this.__countField.setValue(0);
+                this.__countField.setMinValue(0);
+                this.__okButton.setDisabled(true);
+                this.__totalCostField.setValue('');
+                this.__totalCostField.setDisabled(true);
+                this.__hintPanel.show();
+            } else {
+                var value = this.__currentLevel + 1;
+
+                this.__countField.setDisabled(false);
+                this.__countField.setValue(value);
+                this.__countField.setMinValue(value);
+                this.__countField.fireEvent('change', this.__countField, value, value);
+                this.__totalCostField.setDisabled(false);
+                this.__hintPanel.hide();
+
+                this.__isValid();
+            }
+        }, this);
+    },
+
+    __onOKClick: function() {
+        if (this.__isValid()) {
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            var count = this.__countField.getValue() - this.__currentLevel;
+            this.close();
+            this.callback.call(this.callbackScope || window, this.serviceId, selectedChars[0].get('guid'), count);
+        }
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            var count = this.__countField.getValue();
+            valid = !Ext.isEmpty(selectedChars) && this.minCount <= count && count <= this.maxCount;
+        }
+
+        this.__okButton.setDisabled(!valid);
+        return valid;
+    }
+});

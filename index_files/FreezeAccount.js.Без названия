@@ -1,0 +1,84 @@
+/*
+ * Dialog: Freeze account
+ */
+
+Ext.define('wowPortal.module.dialog.FreezeAccount', {
+    extend: 'Ext.Window',
+
+    width: 350,
+    autoHeight: true,
+    modal: true,
+    resizable: false,
+    maxCount: 365,
+
+    title: wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_TITLE,
+
+    initComponent: function() {
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                defaults: {
+                    labelWidth: 180
+                },
+                items: [{
+                    xtype: 'displayfield',
+                    itemId: 'cost',
+                    value: this.cost,
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_COST_LABEL
+                }, {
+                    xtype: 'numberfield',
+                    itemId: 'count',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_DAYS_LABEL,
+                    value: 1,
+                    maxValue: this.maxCount,
+                    minValue: 1,
+                    listeners: {
+                        scope: this,
+                        change: function(field, newValue, oldValue, eOpts) {
+                            this.__totalCostField.setValue(this.cost * newValue);
+                        }
+                    },
+                    allowBlank: false
+                }, {
+                    xtype: 'displayfield',
+                    itemId: 'totalCost',
+                    value: '',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_TOTAL_COST_LABEL
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__okButton.setDisabled(!valid);
+                    }
+                }
+            }],
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                handler: function() {
+                    var count = this.__countField.getValue();
+                    this.callback.call(this.callbackScope || window, count);
+                    this.close();
+                }
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__form = this.items.get('form');
+        this.__okButton = this.down('#ok');
+
+        this.__countField = this.down('#count');
+        this.__costField = this.down('#cost');
+        this.__totalCostField = this.down('#totalCost');
+        this.__countField.fireEvent('change', this.__countField, 1, 1);
+    }
+});

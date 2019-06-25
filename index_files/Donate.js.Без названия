@@ -1,0 +1,7 @@
+Ext.define('wowPortal.module.Donate', {
+    extend: 'wowPortal.module.Common',
+
+    layout: 'anchor',
+    autoScroll: true,
+    html: wowPortal.locale.MODULE_DONATE_TEXT
+});

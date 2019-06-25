@@ -1,0 +1,159 @@
+Ext.define('wowPortal.module.EmailReminder', {
+    extend: 'wowPortal.module.Common',
+
+    layout: {
+        type: 'ux.center'
+    },
+    __captchaImgSrc: '/skins/app/images/password_key.jpg',
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                style: 'margin: 10px',
+                bodyPadding: 10,
+                width: 350,
+                padding: '40px 0',
+                labelWidth: 100,
+                items: [{
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    anchor: '100%',
+                    name: 'account',
+                    fieldLabel: wowPortal.locale.MODULE_EMAIL_REMINDER_LOGIN_LABEL,
+                    value: '',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    inputType: 'password',
+                    anchor: '100%',
+                    name: 'oldpassword',
+                    fieldLabel: wowPortal.locale.MODULE_EMAIL_REMINDER_OLDPASSWORD_LABEL,
+                    value: '',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    inputType: 'password',
+                    anchor: '100%',
+                    name: 'password',
+                    fieldLabel: wowPortal.locale.MODULE_EMAIL_REMINDER_PASSWORD_LABEL,
+                    value: '',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    inputType: 'password',
+                    anchor: '100%',
+                    name: 'password1',
+                    fieldLabel: wowPortal.locale.MODULE_EMAIL_REMINDER_PASSWORD1_LABEL,
+                    value: '',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    labelWidth: 200,
+                    anchor: '100%',
+                    name: 'email',
+                    fieldLabel: wowPortal.locale.MODULE_EMAIL_REMINDER_EMAIL_LABEL,
+                    value: '',
+                    vtype: 'email',
+                    allowBlank: false
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    layout: 'hbox',
+                    style: 'margins: 0px',
+                    items: [{
+                        xtype: 'box',
+                        itemId: 'captcha-img',
+                        style: 'text-align: center; margins: 0px;'
+                    }, {
+                        xtype: 'button',
+                        itemId: 'refresh-captcha',
+                        text: '',
+                        scope: this,
+                        cls: 'refresh-captcha',
+                        iconCls: 'refresh-captcha-icon',
+                        handler: this.updateCaptcha
+                    }]
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'captcha',
+                    anchor: '',
+                    labelWidth: 200,
+                    width: 325,
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_CAPTCHA_LABEL,
+                    allowBlank: false,
+                    listeners:{
+                        change: function(field, newValue, oldValue){
+                            field.setValue(newValue.toUpperCase());
+                        }
+                    }
+                }, {
+                    xtype: 'container',
+                    layout: {
+                        type: 'hbox',
+                        pack: 'center'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        name: 'change',
+                        text: wowPortal.locale.MODULE_EMAIL_REMINDER_SUBMIT_TEXT,
+                        formBind: true, //only enabled once the form is valid
+                        disabled: true,
+                        //scope: this,
+                        handler: function() {
+                            var form = this.up('form');
+                            var accountField = form.down('[name=account]');
+                            var emailField = form.down('[name=email]');
+                            var captchaField = form.down('#captcha');
+                            var oldpasswordField = form.down('[name=oldpassword]');
+                            var passwordField = form.down('[name=password]');
+                            var password1Field = form.down('[name=password1]');
+                            if (!form.getForm().isValid() || passwordField.getValue()!=password1Field.getValue()) {
+                                return;
+                            }
+                            form.setLoading(true);
+                            wowPortal.wow_Services.cmdSendChangePasswordNotification({
+                                accountName: accountField.getValue(),
+                                email: emailField.getValue(),
+                                capcha: captchaField.getValue(),
+                                oldpassword: oldpasswordField.getValue(),
+                                password: passwordField.getValue(),
+                                password1: password1Field.getValue(),
+                                type: 'email'
+                            }, function(response, provider) {
+                                form.setLoading(false);
+                                if('exception' === provider.type || true !== response.success) {
+                                    //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_EMAIL_REMINDER_SUBMIT_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                                } else {
+                                    Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                }
+                                me.updateCaptcha();
+                            }, this);
+                        }
+                    }]
+                }, {
+                    xtype: 'box',
+                    html:  wowPortal.locale.PASSWORD_STRONG_HINT_TEXT
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__changeBtn.setDisabled(!valid);
+                    }
+                }
+            }]
+        });
+        this.callParent();
+        this.__changeBtn = this.down('[name=change]');
+        this.__captchaImg = this.down('#captcha-img');
+        this.__captchaField = this.down('#captcha');
+        this.updateCaptcha();
+        var me = this;
+    },
+    updateCaptcha: function() {
+        this.__captchaImg.update('<img src="' + this.__captchaImgSrc + '?_nc=' + (new Date().getTime()) + '" width="125" height="30"/>');
+    }
+});

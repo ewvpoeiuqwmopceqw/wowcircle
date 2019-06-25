@@ -1,0 +1,5 @@
+Ext.define('wowPortal.module.CookBook', {
+    extend: 'wowPortal.module.CommonIFrame',
+
+    frameSrc: '/cbook.htm?simple=1'
+});

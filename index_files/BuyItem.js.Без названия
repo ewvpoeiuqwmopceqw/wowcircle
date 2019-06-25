@@ -1,0 +1,162 @@
+/*
+ * Dialog: Buy item from sale
+ */
+
+Ext.require([
+    'wowPortal.model.Characters'
+]);
+
+Ext.define('wowPortal.module.dialog.BuyItem', {
+    extend: 'Ext.Window',
+
+    models: ['wowPortal.model.Characters'],
+
+    width: 600,
+    height: 400,
+    modal: true,
+    resizable: false,
+    layout: 'border',
+
+    __itemsCountField: null,
+    __charactesGrid: null,
+    __form: null,
+    __maxItemsCount: 0,
+
+    initComponent: function() {
+        this.__maxItemsCount = this.isStable ? 1 : this.itemRecord.get('fcount')
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                region: 'north',
+                items: [{
+                    xtype: 'numberfield',
+                    itemId: 'items-count',
+                    fieldLabel: wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_COUNT_LABEL,
+                    value: 1,
+                    maxValue: this.isStable ? 1 : this.__maxItemsCount,
+                    minValue: 1,
+                    disabled: this.isStable,
+                    hidden: this.isStable,
+                    listeners: {
+                        scope: this,
+                        change: function(field, newValue, oldValue, eOpts) {
+                        }
+                    },
+                    allowBlank: false
+                }]
+            }, {
+                xtype: 'gridpanel',
+                itemId: 'characters-grid',
+                title: wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_CHARACTERS_GRID_TITLE,
+                loadMask: true,
+                region: 'center',
+                store: {
+                    type: 'direct',
+                    model: wowPortal.model.Characters,
+                    remoteSort: false,
+                    autoLoad: true,
+                    sorters: [{
+                        property: 'name',
+                        direction: 'ASC'
+                    }],
+                    directFn: wowPortal.wow_Services.cmdGetCharactersList
+                },
+                columns: [{
+                    dataIndex: 'name',
+                    //renderer: function(value, metaData, record, colIndex, store, view) {
+                    //    var url = Ext.String.format('/wowarmory/character-sheet.xml?r={0}&cn={1}', wowPortal.data.realm, value);
+                    //    return '<a href="' + url + '" target="_blank">' + value + '</a>';
+                    //},
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    flex: 1
+                }, {
+                    dataIndex: 'faction',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+                    width: 60,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'race',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'class',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'level',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 55
+                }, {
+                    dataIndex: 'totaltime',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+                    width: 90
+                }],
+                viewConfig: {
+                    stripeRows: true
+                },
+                listeners: {
+                    scope: this,
+                    selectionchange: function(view, records) {
+                        this.__isValid(!Ext.isEmpty(records));
+                    }
+                }
+            }],
+
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                disabled: true,
+                handler: function() {
+                    if (this.__isValid()) {
+                        // get count and selected character
+                        var count = this.__itemsCountField.getValue();
+                        var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+                        this.close();
+                        Ext.callback(this.callback, this.callbackScope || window, [selectedChars[0].get('guid'), count]);
+                    }
+                }
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__form = this.items.get('form');
+        this.__itemsCountField = this.__form.items.get('items-count');
+        this.__charactesGrid = this.items.get('characters-grid');
+        this.__okButton = this.down('#ok');
+
+        var title = this.isStable ? wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_TITLE : wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_TITLE;
+        this.setTitle(Ext.String.format(title, this.itemRecord.get('name')));
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var count = this.__itemsCountField.getValue();
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            valid = (count <= this.__maxItemsCount || this.isShop) && (count > 0) && !Ext.isEmpty(selectedChars);
+        }
+
+        this.__okButton.setDisabled(!valid);
+        return valid;
+    }
+});

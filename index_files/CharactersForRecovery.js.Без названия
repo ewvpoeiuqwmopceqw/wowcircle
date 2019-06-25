@@ -1,0 +1,15 @@
+/*
+ * Model: Characters are sold
+ */
+
+Ext.define('wowPortal.model.CharactersForRecovery', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        'guid',
+        'name',
+        'price',
+        'level',
+        'timestamp'
+    ]
+});

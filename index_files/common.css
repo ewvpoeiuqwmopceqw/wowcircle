@@ -1,0 +1,220 @@
+body{
+    cursor: url(hand.cur), default;
+}
+
+/* Center layout */
+.ux-layout-center-item {
+    margin: 0 auto !important;
+    text-align: left;
+}
+.ux-layout-center .x-panel-body,   
+body.ux-layout-center {            
+/*    text-align:center;*/
+}
+
+.collapse-left {
+	background: url(/.jslib/resources/images/util/splitter/mini-left.gif) center center no-repeat transparent !important;
+}
+
+.collapse-right {
+	background: url(/.jslib/resources/images/util/splitter/mini-right.gif) center center no-repeat transparent !important;
+}             
+
+/* MAIN */
+.wow-viewport
+{
+ 	background-image: url("../.jslib/resources/images/background_left_side.gif");
+ 	background-position: 45px 0;
+ 	background-repeat: repeat-y;
+}
+.wow-viewport > .x-box-inner {
+	/*width: 900px !important;*/
+	margin: 0 auto;   
+	/*height: 100%;*/
+}
+
+.rank-icon {
+	padding-left: 30px !important;
+	background: url(/images/manage/icon_rank.gif) left center no-repeat transparent !important;
+}
+
+.balance-icon {
+        padding: 1px 20px 1px 8px !important;
+	background: url(/images/manage/icon_gold.gif) right -3px no-repeat transparent !important;
+}
+
+.x-grid-row-over .cost-cell div, .x-grid-row-selected .cost-cell div, .x-grid-row-focused .cost-cell div {
+        margin-right: 5px;
+        padding-right: 20px;
+	background: url(/images/manage/icon_gold.gif) right center no-repeat !important;
+}
+
+.cost-cell div {
+        margin-right: 5px;
+        padding-right: 20px !important;
+	background: url(/images/manage/icon_gold_disabled.gif) right center no-repeat !important;
+}
+
+.center-container > table > tbody > tr > td.x-table-layout-cell {
+	vertical-align: top;
+}
+
+.center-container > table > tbody > tr > td.center-cell {
+	width: 100%;
+}
+
+.center-container .left-center-panel {
+	background: url("/.jslib/resources/images/panel/panel-leftNavigation-bg.gif") top left repeat-y transparent !important;
+}
+
+.center-container .right-center-panel {
+	background: url("/.jslib/resources/images/panel/panel-rightNavigation-bg.gif") top left repeat-y transparent !important;
+}
+
+.center-container > table {
+	width: 100% !important;
+}
+
+
+.list-ct div {
+	text-align: left;
+	padding-left: 5px;
+}
+
+iframe.wow-frame {
+	border: 0 !important;
+}
+
+/* bad margin for tab panel body */
+/*.tab-panel-zero-top > .x-panel-body {
+	top: 0 !important;  
+}*/
+/*
+.x-border-box input.x-form-text {
+	height: 19px !important;
+}
+
+.x-form-trigger-wrap .x-form-spinner-up, .x-form-trigger-wrap .x-form-spinner-down {
+	height: 9px !important;
+}
+
+.x-form-trigger-wrap .x-form-spinner-down {
+    background-position: 0 -9px !important;
+}*/
+
+.refresh-captcha {
+	margin: 5px 0 5px 10px;
+}
+
+.refresh-captcha-icon {
+	background: url(refresh.gif) center center transparent !important;
+}
+
+.field-separator {
+	background: url(/skins/default/images/content-separator.png) bottom center repeat-x transparent;
+	padding-bottom: 10px;
+}
+
+.vote-banners {
+	margin: 10px 0;
+	text-align: center;
+}
+
+.current-module .x-menu-item-text {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.ordered-list ol, .ordered-list ol li {
+	list-style: decimal;
+}
+
+.ordered-list ol {
+	margin: 10px 10px 10px 30px;
+	text-align: justify;
+}
+
+.ordered-list ol li {
+	margin-bottom: 5px;
+}
+
+/* Login window */
+.login-win-cell {
+	vertical-align: top;
+}
+
+#locale-tool {
+    list-style: none;
+    padding: 0;
+    margin-top: 50px;
+	text-align: center;
+}
+
+.left-center-panel #locale-tool {
+	margin-top: 0px;
+}
+
+#locale-tool li {
+    display: inline;
+    margin: 0 10px;
+}
+
+#locale-tool img {
+	height: 18px;
+}
+
+#counterBlock {
+	text-align: center;
+}
+
+/* ICONS */
+.imgCharSize
+{
+	height: 16px;
+	width: 16px;
+}
+
+.btn-no-border  .x-btn-mc a{
+    padding: 6px !important;
+}
+
+.btn-no-border .x-btn-tc,
+.btn-no-border .x-btn-bc{
+    height: 0px !important;
+}
+
+.imgCharClass1 { background: url('/images/class/small/1.gif') no-repeat;}
+.imgCharClass2 { background: url('/images/class/small/2.gif') no-repeat;}
+.imgCharClass3 { background: url('/images/class/small/3.gif') no-repeat;}
+.imgCharClass4 { background: url('/images/class/small/4.gif') no-repeat;}
+.imgCharClass5 { background: url('/images/class/small/5.gif') no-repeat;}
+.imgCharClass6 { background: url('/images/class/small/6.gif') no-repeat;}
+.imgCharClass7 { background: url('/images/class/small/7.gif') no-repeat;}
+.imgCharClass8 { background: url('/images/class/small/8.gif') no-repeat;}
+.imgCharClass9 { background: url('/images/class/small/9.gif') no-repeat;}
+.imgCharClass11 { background: url('/images/class/small/11.gif') no-repeat;}
+
+.imgCharRace10 { background: url('/images/race/small/1-0.gif') no-repeat;}
+.imgCharRace20 { background: url('/images/race/small/2-0.gif') no-repeat;}
+.imgCharRace30 { background: url('/images/race/small/3-0.gif') no-repeat;}
+.imgCharRace40 { background: url('/images/race/small/4-0.gif') no-repeat;}
+.imgCharRace50 { background: url('/images/race/small/5-0.gif') no-repeat;}
+.imgCharRace60 { background: url('/images/race/small/6-0.gif') no-repeat;}
+.imgCharRace70 { background: url('/images/race/small/7-0.gif') no-repeat;}
+.imgCharRace80 { background: url('/images/race/small/8-0.gif') no-repeat;}
+.imgCharRace90 { background: url('/images/race/small/9-0.gif') no-repeat;}
+.imgCharRace100 { background: url('/images/race/small/10-0.gif') no-repeat;}
+.imgCharRace110 { background: url('/images/race/small/11-0.gif') no-repeat;}
+.imgCharRace220 { background: url('/images/race/small/22-0.gif') no-repeat;}
+.imgCharRace11 { background: url('/images/race/small/1-1.gif') no-repeat;}
+.imgCharRace21 { background: url('/images/race/small/2-1.gif') no-repeat;}
+.imgCharRace31 { background: url('/images/race/small/3-1.gif') no-repeat;}
+.imgCharRace41 { background: url('/images/race/small/4-1.gif') no-repeat;}
+.imgCharRace51 { background: url('/images/race/small/5-1.gif') no-repeat;}
+.imgCharRace61 { background: url('/images/race/small/6-1.gif') no-repeat;}
+.imgCharRace71 { background: url('/images/race/small/7-1.gif') no-repeat;}
+.imgCharRace81 { background: url('/images/race/small/8-1.gif') no-repeat;}
+.imgCharRace91 { background: url('/images/race/small/9-1.gif') no-repeat;}
+.imgCharRace101 { background: url('/images/race/small/10-1.gif') no-repeat;}
+.imgCharRace111 { background: url('/images/race/small/11-1.gif') no-repeat;}
+.imgCharRace221 { background: url('/images/race/small/22-1.gif') no-repeat;}

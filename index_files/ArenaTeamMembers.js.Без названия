@@ -1,0 +1,18 @@
+/*
+ * Model: Arena Team Members
+ */
+
+Ext.define('wowPortal.model.ArenaTeamMembers', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'guid',
+        'class',
+        'is_captain',
+        'name',
+        'personalRating',
+        'seasonGames',
+        'seasonWins',
+        'seasonLose'
+    ]
+});

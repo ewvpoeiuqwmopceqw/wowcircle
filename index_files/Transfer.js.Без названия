@@ -1,0 +1,21 @@
+Ext.define('wowPortal.module.Transfer', {
+    extend: 'wowPortal.module.Common',    
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: {
+                xtype: 'tabpanel',
+                cls: 'tab-panel-zero-top',
+                items: [Ext.create('wowPortal.module.CharacterMoveToWorld', {
+                    title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_WORLD_TITLE
+                }), Ext.create('wowPortal.module.CharacterMoveToAccount', {
+                    title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_ACCOUNT_TITLE
+                }), Ext.create('wowPortal.module.CharacterTransfer', {
+                    title: wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_TRANSFER_TITLE
+                })]
+            }
+        });
+
+        this.callParent(arguments);
+    }
+});

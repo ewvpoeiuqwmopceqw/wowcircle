@@ -1,0 +1,91 @@
+/*
+ * Dialog: Buy reputation for character
+ */
+
+Ext.require([
+    'wowPortal.model.Reputations'
+]);
+
+Ext.define('wowPortal.module.dialog.BuyReputation', {
+    extend: 'wowPortal.module.dialog.CommonBuyWindow',
+
+    models: ['wowPortal.model.Reputations'],
+
+    width: 900,
+    height: 400,
+
+    __reputationsGrid: null,
+
+    initComponent: function() {
+        this.callParent(arguments);
+
+        this.__reputationsGrid = this.add({
+            xtype: 'gridpanel',
+            width: 320,
+            split: true,
+            itemId: 'reputation-grid',
+            title: wowPortal.locale.BUY_REPUTATION_WINDOW_REPUTATIONS_GRID_TITLE,
+            loadMask: true,
+            region: 'east',
+            store: {
+                type: 'direct',
+                model: 'wowPortal.model.Reputations',
+                remoteSort: false,
+                autoLoad: false,
+                directFn: wowPortal.wow_Services.cmdGetReputationList
+            },
+            columns: [{
+                dataIndex: 'f_32',
+                text: wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_NAME,
+                flex: 1
+            }, {
+                dataIndex: 'fstanding',
+                width: 60,
+                text: wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_STANDING
+            }, {
+                dataIndex: 'fprice',
+                width: 70,
+                text: wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_PRICE
+            }],
+            viewConfig: {
+                stripeRows: true,
+                emptyText: wowPortal.locale.BUY_REPUTATION_WINDOW_GRID_EMPTY_MSG
+            },
+            listeners: {
+                scope: this,
+                selectionchange: function(view, records) {
+                    this.__isValid();
+                }
+            }
+        });
+
+        this.__charactesGrid.on('selectionchange', function(view, records) {
+            this.__reputationsGrid.getStore().load({
+                params: {
+                    guid: records[0].get('guid')
+                }
+            });
+        }, this);
+    },
+
+    __onOKClick: function() {
+        if (this.__isValid()) {
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            var selectedReputations = this.__reputationsGrid.getSelectionModel().getSelection();
+            this.close();
+            this.callback.call(this.callbackScope || window, selectedChars[0].get('guid'),
+                selectedReputations[0].get('f_faction'), selectedReputations[0].get('fkey'));
+        }
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var selectedChars = this.__charactesGrid.getSelectionModel().getSelection();
+            var selectedReputations = this.__reputationsGrid.getSelectionModel().getSelection();
+            valid = !Ext.isEmpty(selectedChars) && !Ext.isEmpty(selectedReputations);
+        }
+
+        this.__okButton.setDisabled(!valid);
+        return valid;
+    }
+});

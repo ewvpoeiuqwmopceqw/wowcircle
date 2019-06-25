@@ -1,0 +1,13 @@
+/*
+ * Model: Operatorss
+ */
+
+Ext.define('wowPortal.model.Operators', {
+    extend: 'Ext.data.Model',
+    idProperty: 'id',
+    fields: [
+        {type: 'string', name: 'id'},
+        {type: 'string', name: 'operator'},
+        {type: 'boolean', name: 'selected'}
+    ]
+});

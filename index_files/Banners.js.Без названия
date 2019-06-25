@@ -1,0 +1,20 @@
+/*
+ * Model: Account Types
+ */
+
+Ext.define('wowPortal.model.Banners', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fkey',
+        'fname',
+        'fvotes',
+        'fbanner',
+        'flocation',
+        'fbonusType_1',
+        'fbonusType_2',
+        'fenable',
+        'fbonusforvote',
+        'ffromWeb'
+    ]
+});

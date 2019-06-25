@@ -1,0 +1,19 @@
+/*
+ * Model: Friends
+ */
+
+Ext.define('wowPortal.model.Messages', {
+    extend: 'Ext.data.Model',
+    idProperty: 'mfkey',
+    fields: [
+        'mfkey',
+        'mftype',
+        'mftypename',
+        'mfdest',
+        'mfdestname',
+        'ftopic',
+        'fmessage',
+        'fdatetime',
+        {type: 'boolean', name: 'selected'}
+    ]
+});

@@ -1,0 +1,199 @@
+/*
+ * Dialog: Common window for buy some thing
+ */
+
+Ext.require([
+    'wowPortal.model.Characters'
+]);
+
+Ext.define('wowPortal.module.dialog.SendMessage', {
+    extend: 'Ext.Window',
+
+    models: ['wowPortal.model.Characters'],
+
+    width: 520,
+    //height: 250,
+    autoHeight: true,
+    modal: true,
+    resizable: false,
+    layout: 'anchor',
+
+    __charactesGrid: null,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                region: 'north',
+                height: 25,
+                items: [{
+                    labelWidth: 150,
+                    xtype: 'fieldcontainer',
+                    fieldLabel: wowPortal.locale.SEND_MESSAGE_WINDOW_NAME_LABEL,
+                    layout: 'hbox',
+                    items: [{
+                        xtype: 'textfield',
+                        itemId: 'charname',
+                        width: 100,
+                        allowBlank: false
+                    }, {
+                        xtype: 'button',
+                        margins: '0 0 0 20px',
+                        name: 'findchar',
+                        width: 60,
+                        text: wowPortal.locale.SEND_MESSAGE_WINDOW_FIND_BUTTON,
+                        scope: this,
+                        handler: this.__onFindCharacterClick
+                    }]
+                }]
+            }, {
+                xtype: 'gridpanel',
+                height: 80,
+                itemId: 'characters-grid',
+                title: wowPortal.locale.SEND_MESSAGE_WINDOW_FINDED_LABEL,
+                loadMask: true,
+                region: 'center',
+                store: {
+                    type: 'direct',
+                    model: 'wowPortal.model.Characters',
+                    remoteSort: false,
+                    autoLoad: false,
+                    directFn: wowPortal.wow_Services.cmdFindCharacterByName,
+                    listeners: {
+                        scope: this,
+                        load: function() {
+                            this.__isValid();
+                        }
+                    }
+                },
+                columns: [{
+                    dataIndex: 'name',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+                    flex: 1
+                }, {
+                    dataIndex: 'faction',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+                    width: 60,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'race',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'class',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+                    width: 40,
+                    align: 'center',
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+                    }
+                }, {
+                    dataIndex: 'level',
+                    text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+                    align: 'center',
+                    width: 55
+                }],
+                viewConfig: {
+                    stripeRows: true
+                },
+                listeners: {
+                    scope: this,
+                    selectionchange: function(view, records) {
+                        this.__isValid();
+                    }
+                }
+            }, {
+                xtype: 'form',
+                itemId: 'form-message',
+                region: 'south',
+                defaults: {
+                    labelWidth: 130
+                },
+                items: [{
+                    xtype: 'textfield',
+                    itemId: 'title',
+                    anchor: '100%',
+                    fieldLabel: wowPortal.locale.SEND_MESSAGE_WINDOW_TITLE_LABEL,
+                    allowBlank: false,
+                    listeners: {
+                        scope: this,
+                        change: function(field, newValue, oldValue, eOpts) {
+                            this.__isValid();
+                        }
+                    }
+                }, {
+                    xtype: 'textarea',
+                    labelPosition: 'top',
+                    height: 50,
+                    anchor: '100%',
+                    itemId: 'message',
+                    fieldLabel: wowPortal.locale.SEND_MESSAGE_WINDOW_MESSAGE_LABEL,
+                    allowBlank: false,
+                    listeners: {
+                        scope: this,
+                        change: function(field, newValue, oldValue, eOpts) {
+                            this.__isValid();
+                        }
+                    }
+                }]
+            }],
+
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                disabled: true,
+                handler: this.__onOKClick
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__charactesGrid = this.down('#characters-grid');
+        this.__findBtn = this.down('#findchar');
+        this.__charNameField = this.down('#charname');
+        this.__titleField = this.down('#title');
+        this.__messageField = this.down('#message');
+        this.__okButton = this.down('#ok');
+    },
+
+    __onFindCharacterClick: function() {
+        this.__charactesGrid.getStore().load({
+            params: {
+                name: this.__charNameField.getValue()
+            }
+        });
+    },
+
+    __onOKClick: function() {
+        if (this.__isValid()) {
+            // get selected character
+            var character = this.__charactesGrid.getStore().first();
+            this.close();
+            this.callback.call(this.callbackScope || window,
+                character.get('guid'), this.__titleField.getValue(), this.__messageField.getValue());
+        }
+    },
+
+    __isValid: function(valid) {
+        if (!Ext.isDefined(valid)) {
+            var count = this.__charactesGrid.getStore().getCount();
+            valid = 1 == count && this.__titleField.isValid() && this.__messageField.isValid();
+        }
+
+        this.__okButton.setDisabled(!valid);
+        return valid;
+    }
+});

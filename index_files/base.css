@@ -1,0 +1,63 @@
+/* line 1, ../sass/base.scss */
+html, body, body * {
+  scrollbar-track-color: #333;
+  scrollbar-base-color: #666;
+  scrollbar-shadow-color: #333;
+  scrollbar-face-color: #333;
+  scrollbar-arrow-color: gold;
+  scrollbar-highlight-color: #333;
+  margin: 0;
+  padding: 0; }
+
+/* line 13, ../sass/base.scss */
+body {
+  background-image: url("../images/main-bg.png");
+  background-repeat: no-repeat;
+  background-position: 50% 0px;
+  background-color: black; }
+
+/* line 20, ../sass/base.scss */
+div.x-resizable-pinned {
+  background: #000 !important;
+  color: #d4d4d4; }
+
+/* line 51, ../sass/base.scss */
+div.x-panel-header-default, div.x-panel-header-default-framed-top, div.x-panel-header-default-framed {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none; }
+
+/* line 94, ../sass/base.scss */
+div.x-progress-bar {
+  border-top: 0 none; }
+
+/* line 109, ../sass/base.scss */
+div.x-column-header {
+  text-shadow: none;
+  border-right: 1px solid #444; }
+
+/* line 110, ../sass/base.scss */
+div.x-grid-body {
+  border-top-color: #646464 !important; }
+
+/* line 181, ../sass/base.scss */
+table.x-datepicker-inner a:hover, table.x-datepicker-inner .x-datepicker-disabled a:hover {
+  color: #ff0f0f !important; }
+
+/* line 182, ../sass/base.scss */
+.x-datepicker-month .x-btn-default-small .x-btn-inner {
+  color: #ffe401 !important;
+  font-weight: bold;
+  font-size: 12px; }
+
+/* line 183, ../sass/base.scss */
+.x-monthpicker-yearnav button {
+  background-color: #000; }
+
+/* line 184, ../sass/base.scss */
+table.x-datepicker-inner .x-datepicker-today a {
+  background: #200 !important; }
+
+/* line 253, ../sass/base.scss */
+.x-btn-inner {
+  text-shadow: 0 -1px 0 black; }

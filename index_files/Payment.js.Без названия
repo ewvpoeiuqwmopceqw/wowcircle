@@ -1,0 +1,147 @@
+Ext.define('wowPortal.module.Payment', {
+    extend: 'wowPortal.module.Common',
+
+    //layout: 'fit',
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: {
+                xtype: 'tabpanel',
+                cls: 'tab-panel-zero-top',
+                autoHeight: true,
+                autoScroll: true,
+                items: [
+                {
+                    xtype: 'panel',
+                    itemId: 'sms-panel-mobiplat-webmoney',
+                    autoScroll: true,
+                    autoHeight: true,
+                    title: wowPortal.locale.MODULE_PAYMENT_TITLE_2,
+                    loader: {
+                        loadMask: true,
+                        autoLoad: true,
+                        renderer: 'html',
+                        url: wowPortal.locale.MODULE_PAYMENT_URL_2
+                    },
+                    listeners: {
+                        scope: this,
+                        show: {
+                            fn: function(panel, opts) {
+                                //panel.loader.load();
+                            },
+                            single: true
+                        },
+                        afterrender: function(panel, opts) {
+                        }
+                    }
+                },
+                {
+                    xtype: 'panel',
+                    itemId: 'sms-panel-mobiplat',
+                    autoScroll: true,
+                    autoHeight: true,
+                    title: wowPortal.locale.MODULE_PAYMENT_SMS_TITLE_1,
+                    loader: {
+                        loadMask: true,
+                        autoLoad: true,
+                        renderer: 'html',
+                        url: wowPortal.locale.MODULE_PAYMENT_SMS_FORM_URL
+                    },
+                    listeners: {
+                        scope: this,
+                        show: {
+                            fn: function(panel, opts) {
+                                //panel.loader.load();
+                            },
+                            single: true
+                        },
+                        afterrender: function(panel, opts) {
+                        }
+                    }
+                },
+                {
+                    xtype: 'panel',
+                    itemId: 'robox',
+                    autoScroll: true,
+                    autoHeight: true,
+                    title: wowPortal.locale.MODULE_PAYMENT_ROBOX_TITLE,
+                    loader: {
+                        loadMask: true,
+                        autoLoad: true,
+                        renderer: 'html',
+                        url: '/robox.htm'
+                    }
+                },
+                {
+                    xtype: 'panel',
+                    itemId: 'sms-panel-mobiplat-sms',
+                    autoScroll: true,
+                    autoHeight: true,
+                    title: wowPortal.locale.MODULE_PAYMENT_TITLE_3,
+                    loader: {
+                        loadMask: true,
+                        autoLoad: true,
+                        renderer: 'html',
+                        url: wowPortal.locale.MODULE_PAYMENT_URL_3
+                    },
+                    listeners: {
+                        scope: this,
+                        show: {
+                            fn: function(panel, opts) {
+                                //panel.loader.load();
+                            },
+                            single: true
+                        },
+                        afterrender: function(panel, opts) {
+                        }
+                    }
+                }, 
+                {
+                    xtype: 'panel',
+                    itemId: 'sms-panel',
+                    autoScroll: true,
+                    autoHeight: false,
+                    height: 1000,
+                    title: wowPortal.locale.MODULE_PAYMENT_SMS_TITLE,
+                    loader: {
+                        loadMask: true,
+                        autoLoad: true,
+                        renderer: 'html',
+                        url: '/sms.htm?simple=2'
+                    },
+                    listeners: {
+                        scope: this,
+                        show: {
+                            fn: function(panel, opts) {
+                                //panel.loader.load();
+                            },
+                            single: true
+                        },
+                        afterrender: function(panel, opts) {
+                        }
+                    }
+                }
+//CP1 & CP2
+//                ,{
+//                    xtype: 'panel',
+//                    itemId: 'sms-panel-oplata',
+//                    autoScroll: true,
+//                    autoHeight: true,
+//                    title: wowPortal.locale.MODULE_PAYMENT_SMS_RUS_TITLE,
+//                    loader: {
+//                        loadMask: true,
+//                        autoLoad: true,
+//                        renderer: 'html',
+//                        url: '/sms_oplata.htm'
+//                    }
+//                }
+                
+                ]
+            }
+        });
+
+        this.callParent(arguments);
+
+        this.__smsPanel = this.down('#sms-panel');
+    }
+});

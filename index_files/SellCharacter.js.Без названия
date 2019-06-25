@@ -1,0 +1,178 @@
+/*
+ * Module: Sell character
+ */
+
+Ext.require([
+    'wowPortal.model.CharactersAreSold'
+]);
+
+Ext.define('wowPortal.module.SellCharacter', {
+    extend: 'wowPortal.module.Common',
+
+    layout: 'border',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            pageSize: 25,
+            model: wowPortal.model.Characters,
+            remoteSort: false,
+			autoLoad: true,
+			sorters: [{
+				property: 'name',
+				direction: 'ASC'
+			}],
+            sorters: [{
+                    property: 'level',
+                    direction: 'DESC'
+			}],
+            directFn: wowPortal.wow_Services.cmdGetCharactersList
+        });
+
+        Ext.apply(this, {
+            items: [{
+					xtype: 'grid',
+					store: store,
+					region: 'center',
+					columns: [{
+						dataIndex: 'name',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME,
+						flex: 1,
+						renderer: function(value, metaData, record, colIndex, store, view) {
+							return '<a href="javascript:void(0)">' + value + '</a>';
+						}
+					}, {
+						dataIndex: 'faction',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION,
+						width: 65,
+						align: 'center',
+						renderer: function(value, metaData, record, colIndex, store, view) {
+							return '<img style="width:18px; height:18px;" src="/images/faction/' + value + '.gif"/>';
+						}
+					}, {
+						dataIndex: 'race',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE,
+						width: 45,
+						align: 'center',
+						renderer: function(value, metaData, record, colIndex, store, view) {
+							return '<img style="width:18px; height:18px;" src="/images/race/small/' + record.get('race') + '-' + record.get('gender') + '.gif"/>';
+						}
+					}, {
+						dataIndex: 'class',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS,
+						width: 45,
+						align: 'center',
+						renderer: function(value, metaData, record, colIndex, store, view) {
+							return '<img style="width:18px; height:18px;" src="/images/class/small/' + value + '.gif"/>';
+						}
+					}, {
+						dataIndex: 'level',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL,
+						align: 'center',
+						width: 60
+					}, {
+						dataIndex: 'totaltime',
+						text: wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME,
+						width: 90
+				}],
+				viewConfig: {
+					stripeRows: true,
+					loadMask: false,
+					emptyText: wowPortal.locale.COMMON_CHARACTERS_GRID_EMPTY_MSG
+				},
+
+				listeners: {
+					scope: this,
+					cellclick: function(gridView, htmlElement, columnIndex, dataRecord){
+						this.__onRowClick(dataRecord)
+					},
+				}
+			}]
+        });
+
+        this.callParent(arguments);
+
+    },
+
+    __onRowClick: function(rec) {
+        this.__sellCharacter(rec);
+    },
+
+    __onSellCharacterClick: function(grid, rowIndex, colIndex) {
+        var rec = grid.getStore().getAt(rowIndex);
+        this.__sellCharacter(rec);
+    },
+
+    __sellCharacter: function(rec) {
+		Ext.create('wowPortal.module.dialog.SellChar', {
+            itemRecord: rec,
+            callbackScope: this,
+            callback: this.__callback
+        }, this).show();
+    },
+
+    __callback: function(guid, price) {
+      var self = this;
+        self.setLoading(true);
+        if (wowPortal.data.isMobileLocked) {
+          Ext.create('wowPortal.module.DeleteCharacter', {
+
+            deleteByEmail: function (win) {
+              wowPortal.wow_Services.cmdSellChar({ charId: guid, price: price },
+                function(response, provider) {
+                     self.setLoading(false);
+                     if('exception' === provider.type || !response) {
+                         Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, provider.message);
+                     } else {
+                      Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_SELL_CHAR_SUCCESS);
+                     }
+                }, this);
+             },
+
+             deleteBySms: function () {
+               Ext.Msg.prompt(wowPortal.locale.MODULE_SMS_CONFIRM, wowPortal.locale.MODULE_SMS_CONFIRM_PHONE, function(btn, phone) {
+                       if (btn == 'ok') {
+                         self.setLoading(false);
+                               wowPortal.wow_Services.cmdSellChar({ charId: guid, price: price, phone: phone, by_sms: true },
+                                       function(response, provider){
+                                         self.setLoading(false);
+                                               if('exception' === provider.type || true !== response.success) {
+                                                 if (response)
+                                                      Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                               }
+                                               if (response && response.success) {
+                                                       var win = Ext.create('wowPortal.module.dialog.MobileConfirm', {
+                                                               callbackScope: this,
+                                                               callback: function (code) {
+                                                                       wowPortal.wow_Services.cmdSellChar({ charId: guid, price: price, phone: phone, mobileKey: code },
+                                                                               function(response){
+                                                                                      self.setLoading(false);
+                                                                                      Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                                                               }
+                                                                       );
+                                                               }
+                                                       });
+
+                                                       win.show();
+                                               }
+                                       }, this
+                               );
+                       }
+               }, this);
+
+             }
+           }).show();
+        } else {
+          wowPortal.wow_Services.cmdSellChar({
+              charId: guid,
+              price: price
+          }, function(response, provider) {
+               self.setLoading(false);
+               if('exception' === provider.type || !response) {
+                   Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, provider.message);
+               } else {
+                Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_SELL_CHAR_SUCCESS);
+               }
+          }, this);
+        }
+    }
+});

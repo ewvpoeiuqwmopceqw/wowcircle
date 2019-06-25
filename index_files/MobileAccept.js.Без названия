@@ -1,0 +1,199 @@
+/*
+ * Dialog: Password Notify
+ */
+
+Ext.define('wowPortal.module.dialog.MobileAccept', {
+    extend: 'Ext.Window',
+    ui: 'reminder',
+    modal: true,
+    resizable: false,
+    draggable: false,
+    closable: false,
+    style: 'padding: 100px 60px 50px 60px',
+    width: 515,
+    height: 300,
+    border: false,
+    shadow: false,
+    __captchaImgSrc: '/skins/app/images/mobile_key.jpg',
+    
+    initComponent: function() {
+        
+        this.__countryListCombo = Ext.create('Ext.form.field.ComboBox', {
+            ui: 'countryList',
+            displayField: 'country',
+            width: 110,
+            hideLabel: true,
+            queryMode: 'local',
+            typeAhead: false,
+            forceSelection: false,
+            lazyInit: false,
+            editable: false,
+            valueField: 'id',
+            allowBlank: false,
+            listConfig: {
+                getInnerTpl: function() {
+                    return '<div>{country}</div>';
+                }
+            },
+            store: {
+                type: 'direct',
+                model: 'wowPortal.model.Countries',
+                autoLoad: false,
+                directFn: wowPortal.wow_Services.cmdSmsCountries,
+                listeners: {
+                    scope: this,
+                    beforeload: function(store, operation) {
+                        this.__countryListCombo.disable();
+                    },
+                    load: function(store, record, successfull) {
+                        this.__countryListCombo.enable();
+                        var rec = store.findRecord('selected', true);
+                        this.__countryListCombo.setValue(rec);
+                    }
+                }
+            },
+            listeners: {
+                scope: this,
+                select: function(combo, selection) {
+                    var country = selection[0];
+                    if (country) {
+                        this.__operatorListCombo.getStore().getProxy().extraParams = {country: country.get('id')};
+                        this.__operatorListCombo.store.load();
+                    }
+                }
+            }
+        });
+        this.__operatorListCombo = Ext.create('Ext.form.field.ComboBox', {
+            ui: 'operatorList',
+            displayField: 'operator',
+            width: 110,
+            hideLabel: true,
+            queryMode: 'local',
+            typeAhead: false,
+            forceSelection: true,
+            lazyInit: false,
+            editable: false,
+            valueField: 'operator',
+            allowBlank: true,
+            listConfig: {
+                getInnerTpl: function() {
+                    return '<div>{operator}</div>';
+                }
+            },
+            store: {
+                type: 'direct',
+                model: 'wowPortal.model.Operators',
+                autoLoad: false,
+                directFn: wowPortal.wow_Services.cmdSmsOperators,
+                listeners: {
+                    scope: this,
+                    beforeload: function(store, operation) {
+                        this.__operatorListCombo.disable();
+                    },
+                    load: function(store, record, successfull) {
+                        var rec = store.findRecord('selected', true);
+                        this.__operatorListCombo.setValue(rec);
+                        this.__operatorListCombo.enable();
+                    }
+                }
+            },
+            listeners: {
+                scope: this,
+                select: function(combo, selection) {
+                    var country = selection[0];
+                    if (country) {
+                        var cid = this.__countryListCombo.getValue();
+                        wowPortal.wow_Services.cmdSmsNumberToApprove({country: cid, operator: country.get('id')}, this.__onGetSmsNumber, this);
+                    }
+                }
+            }
+            });
+        this.__operatorListCombo.disable();
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                ui: 'reminder',
+                style: 'padding: 10px 10px 0 10px; margin: 0px;',
+                //bodyPadding: 10,
+                defaults: {
+                    labelWidth: 0,
+                    anchor: '100%',
+                    value: '',
+                    allowBlank: false
+                },
+                items: [ 
+                this.__countryListCombo, 
+                this.__operatorListCombo,
+                {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    labelWidth: 0,
+                    layout: 'hbox',
+                    style: 'margins: 0px',
+                    items: [
+                        {
+                            width: 90,
+                            xtype: 'box',
+                            itemId:'sms-number'
+                        }, {
+                            xtype: 'box',
+                            width: 200,
+                            itemId: 'captcha-img',
+                            style: 'text-align: center; margins: 0px;'
+                        },
+                        {
+                            width: 90,
+                            xtype: 'box',
+                            itemId:'sms-price'
+                        }
+                    ]
+                }],
+                buttons: [{
+                        xtype: 'box',
+                        width: 300,
+                        html: wowPortal.locale.MODULE_MANAGE_INFO_MOBILE_LOCK_INFO
+                }, {
+                    itemId: 'ok',
+                    text: wowPortal.locale.COMMON_BUTTON_OK,
+                    scope: this,
+                    handler: function() {
+                        this.close();
+                    }
+                }]
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__captchaImg = this.down('#captcha-img');
+        this.__smsNumber = this.down('#sms-number');
+        this.__smsPrice = this.down('#sms-price');
+        this.__countryListCombo.getStore().load();
+    },
+
+    updateCaptcha: function(prefix) {
+        this.__captchaImg.update('<b>Сообщение</b> <br/><img src="' + this.__captchaImgSrc + '?prefix='+prefix+'&_nc=' + (new Date().getTime()) + '" width="200" height="35"/>');
+    },
+    
+    __onGetSmsNumber: function(response, provider) {
+        this.__smsNumber.update('<b>Номер</b><br/>' + response[0].number);
+        this.__smsPrice.update('<b>Стоимость</b><br/> ' + response[0].price + '&nbsp;' + response[0].currency_name);
+        this.updateCaptcha(response[0].prefix);
+        wowPortal.wow_Services.cmdSmsApproved({
+            country: response[0].country, 
+            operator: response[0].operator, 
+            number: response[0].number
+        },
+                function(responce) {
+                      if (response)
+                      {
+                          
+                      }
+                }, this
+        )
+        this.__operatorListCombo.disable();
+        this.__countryListCombo.disable();
+    }
+
+});

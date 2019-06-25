@@ -1,0 +1,12 @@
+/*
+ * Model: Account Types
+ */
+
+Ext.define('wowPortal.model.AccountTypes', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'id',
+        'name'
+    ]
+});

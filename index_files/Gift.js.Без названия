@@ -1,0 +1,46 @@
+/*
+ * Module: Gifts
+ */
+Ext.define('wowPortal.module.Gift', {
+    extend: 'wowPortal.module.CommonMarket',
+
+    isSale: true,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            itemsListDirectFn: wowPortal.wow_Services.cmdGetItemListFromGifts,
+            categoriesListDirectFn: wowPortal.wow_Services.cmdGetItemCategoryList,
+            buyFirectFn: wowPortal.wow_Services.cmdBuyItemFromGifts
+        });
+        this.callParent(arguments);
+        Ext.apply(this, {
+            __showBuyDialog: function(record) {
+                var buyWindow = Ext.create('wowPortal.module.dialog.BuyGift', {
+                    itemRecord: record,
+                    callbackScope: this,
+                    isShop: this.isShop,
+                    callback: function(guid, count, subject, message) {
+                        this.setLoading(true);
+                        this.buyFirectFn({
+                            charId: guid,
+                            itemId: record.get('entry'),
+                            count: count,
+                            subject: subject,
+                            message: message
+                        }, function(response, provider) {
+                             this.setLoading(false);
+                             if('exception' === provider.type || true !== response) {
+                                 //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                                 return;
+                             } else {
+                                 Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_SUCCESS);
+                                 this.__pagingToolbar.doRefresh();
+                             }
+                        }, this);
+                    }
+                }, this);
+                buyWindow.show();
+            }
+        });
+    }
+});

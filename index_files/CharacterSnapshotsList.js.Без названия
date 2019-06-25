@@ -1,0 +1,7 @@
+Ext.define('wowPortal.model.CharacterSnapshotsList', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'fkey', 'f_server', 'fservername','f_account', 'fstatus', 'f_character', 'fcharname', 'fdate'
+    ]
+});

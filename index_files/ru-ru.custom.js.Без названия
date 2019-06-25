@@ -1,0 +1,547 @@
+wowPortal.locale.COMMON_BUTTON_OK='OK';
+wowPortal.locale.COMMON_BUTTON_CANCEL='Отмена';
+wowPortal.locale.COMMON_MESSAGE_ERROR='ОШИБКА!';
+wowPortal.locale.COMMON_CAPTION_MESSAGE='Сообщение';
+wowPortal.locale.COMMON_LABEL_YES='Да';
+wowPortal.locale.COMMON_LABEL_NO='Нет';
+wowPortal.locale.COMMON_SUCCESS_MESSAGE='Операция выполнена успешно.';
+wowPortal.locale.COMMON_ERROR_MESSAGE='Операция не прошла! Обратитесь к администратору.';
+wowPortal.locale.COMMON_ALERT_CAPTION='Сообщение';
+wowPortal.locale.MODULE_PAYMENT_UNITPAY_TITLE='UnitPay';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_NAME='Ник';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_FACTION='Фракция';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_RACE='Раса';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_CLASS='Класс';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_LEVEL='Уровень';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_TOTAL_TIME='Игровое время';
+wowPortal.locale.COMMON_CHARACTERS_GRID_HEADER_PRICE='Цена';
+wowPortal.locale.COMMON_CHARACTERS_GRID_EMPTY_MSG='Нет персонажей';
+wowPortal.locale.COMMON_CHARACTERS_GRID_RANGE_MSG='Показаны персонажи {0} - {1} (всего {2})';
+
+wowPortal.locale.COMMON_LIVE_INTERNET='<a href="http://www.liveinternet.ru/click\" ' +
+	'target=_blank><img src="http://counter.yadro.ru/hit?t26.6;r' +
+	escape(document.referrer)+((typeof(screen)=="undefined")?"":";s" +
+	screen.width+"*"+screen.height+"*" + 
+	(screen.colorDepth?screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL) +";"+Math.random() +
+	'" alt="" title="LiveInternet" ' +
+	'border="0" width="88" height="15"><\/a>';
+
+wowPortal.locale.MAIN_PAGE_SERVICE_TAB_TITLE='Услуги';
+wowPortal.locale.MAIN_PAGE_ARMORY_TAB_TITLE='Персонажи';
+// menu
+wowPortal.locale.MAIN_PAGE_MENU_MANAGE_TITLE='Управление';
+wowPortal.locale.MAIN_PAGE_MENU_MANAGE_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_ARMORY_TITLE='Оружейная';
+wowPortal.locale.MAIN_PAGE_MENU_ARMORY_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_PAYMENT_TITLE='Пополнить счёт';
+wowPortal.locale.MAIN_PAGE_MENU_PAYMENT_DESCR='Купить бонусы';
+wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_EMAIL_TITLE='Изменить e-mail';
+wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_EMAIL_DESCR='Изменение e-mail адреса';
+wowPortal.locale.MAIN_PAGE_MENU_EMAIL_REMINDER_TITLE='Изменить пароль';
+wowPortal.locale.MAIN_PAGE_MENU_EMAIL_REMINDER_DESCR='Изменение пароля';
+wowPortal.locale.MAIN_PAGE_MENU_BONUSES_TITLE='Бонус услуги';
+wowPortal.locale.MAIN_PAGE_MENU_BONUSES_DESCR='Получение дополнительных возможностей за бонусы.';
+wowPortal.locale.MAIN_PAGE_MENU_STABLE_TITLE='Конюшни';
+wowPortal.locale.MAIN_PAGE_MENU_STABLE_DESCR='Тут вы можете приобрести маунта!';
+wowPortal.locale.MAIN_PAGE_MENU_SHOP_TITLE='Магазин товаров';
+wowPortal.locale.MAIN_PAGE_MENU_SHOP_DESCR='Список предметов, которые можно приобрести за бонусы.';
+wowPortal.locale.MAIN_PAGE_MENU_SALE_TITLE='Распродажа';
+wowPortal.locale.MAIN_PAGE_MENU_SALE_DESCR='Поштучная распродажа эксклюзивных вещей. Торопитесь, количество ограничено!';
+wowPortal.locale.MAIN_PAGE_MENU_BUY_CHARACTER_TITLE='Купить персонажа';
+wowPortal.locale.MAIN_PAGE_MENU_BUY_CHARACTER_DESCR='Выкуп забытых и заброшенных персонажей.';
+wowPortal.locale.MAIN_PAGE_MENU_TRANSFER_TITLE='Перенос персонажа на другой аккаунт [200 Бонусов]';
+wowPortal.locale.MAIN_PAGE_MENU_TRANSFER_DESCR='Перенос выбранного персонажа на указанный аккаунт';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_RECOVERY_TITLE='Восстановление персонажей';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_RECOVERY_DESCR='Востановить удаленного персонажа';
+wowPortal.locale.MAIN_PAGE_MENU_ANTI_ERROR_TITLE='AntiError';
+wowPortal.locale.MAIN_PAGE_MENU_ANTI_ERROR_DESCR='Здесь можно избавится от такихи ошибок, как 131, 132 и различных аур';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_TRANSFER_TITLE='Трансферт персонажей';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_TRANSFER_DESCR='Трансферт персонажей только с других проектов';
+wowPortal.locale.MAIN_PAGE_MENU_TRANSFERT_TITLE='Трансферт';
+wowPortal.locale.MAIN_PAGE_MENU_TRANSFERT_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_GIVE_BONUSES_TITLE='Бонусы';
+wowPortal.locale.MAIN_PAGE_MENU_GIVE_BONUSES_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_RULES_TITLE='Правила пользования';
+wowPortal.locale.MAIN_PAGE_MENU_RULES_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_COMMAND_LOG_TITLE='Лог комманд';
+wowPortal.locale.MAIN_PAGE_MENU_COMMAND_LOG_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_ARENA_LOG_TITLE='Лог арены';
+wowPortal.locale.MAIN_PAGE_MENU_ARENA_LOG_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_SMS_LOG_TITLE='СМС лог';
+wowPortal.locale.MAIN_PAGE_MENU_SMS_LOG_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_LOG_TITLE='Лог аккаунтов';
+wowPortal.locale.MAIN_PAGE_MENU_ACCOUNT_LOG_DESCR='';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_WORLD_TITLE='Перенос между мирами';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_WORLD_DESCR='Перенос персонажей между мирами';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_ACCOUNT_TITLE='Перенос между аккаунтами';
+wowPortal.locale.MAIN_PAGE_MENU_CHARACTER_MOVE_TO_ACCOUNT_DESCR='Перенос персонажей между аккаунтами';
+
+wowPortal.locale.MAIN_PAGE_MENU_GET_BONUSES='Получить бонусы';
+wowPortal.locale.MAIN_PAGE_MENU_CHAR_TRANSFER='Трансферт персонажей';
+wowPortal.locale.MAIN_PAGE_MENU_BANNED_LIST='Список забаненых';
+wowPortal.locale.MAIN_PAGE_MENU_HELP='Справка';
+wowPortal.locale.MAIN_PAGE_MENU_REGISTER='Регистрация';
+wowPortal.locale.MAIN_PAGE_MENU_LOGIN='Вход';
+wowPortal.locale.MAIN_PAGE_MENU_LOGOUT='Выход';
+wowPortal.locale.MAIN_PAGE_FOOTER_CONTENT='Copyrights 2012. Version 1.0.0';
+wowPortal.locale.MAIN_PAGE_REGISTER_SUCCESS='Вы успешно зарегистрированы в ЛК!';
+wowPortal.locale.MAIN_PAGE_PASSWORD_NOTIFY_SUCCESS='Новый пароль отправлен на Ваш e-mail.';
+wowPortal.locale.MAIN_PAGE_ACCOUNT_BALANCE_LABEL='Баланс:';
+
+wowPortal.locale.MAIN_PAGE_BREADCRUMB_FIRST='Управление &gt;&gt; ';
+
+wowPortal.locale.MODULE_SALE_CATEGORIES_PANEL_TITLE='Категория товара';
+wowPortal.locale.MODULE_SALE_ITEMS_PANEL_TITLE='Предметы';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_NAME='Название';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_COST='Цена (бонусов)';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_COUNT='Количество';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_BUY='Купить';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_ID='ID';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_ITEM_LEVEL='Уровень предмета';
+wowPortal.locale.MODULE_SALE_ITEMS_HEADER_REQUIRED_LEVEL='Требуемый уровень';
+wowPortal.locale.MODULE_SALE_ITEMS_PANEL_EMPTY_MSG='В этой категории нет товаров';
+wowPortal.locale.MODULE_SALE_ITEMS_PANEL_RANGE_MSG='Показано товары {0} - {1} (всего {2})';
+wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_TITLE='Покупается "{0}"';
+wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_COUNT_LABEL='Количество';
+wowPortal.locale.MODULE_SALE_ITEMS_BUY_WINDOW_CHARACTERS_GRID_TITLE='Выберите персонажа, для кого делается покупка:';
+wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_SUCCESS='Операция выполнена успешно.';
+wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_ERROR='Операция не прошла! Обратитесь к администратору.';
+
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_HEADER_ID='ID';
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_HEADER_NAME='Аккаунт';
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_HEADER_BONUS_COUNT='Бонусов';
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_HEADER_UPDATE_AT='Обновлён';
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_EMPTY_MSG='Нет аккаунтов';
+wowPortal.locale.MODULE_GIVE_BONUSES_GRID_RANGE_MSG='Показаны аккаунты {0} - {1} (всего {2})';
+wowPortal.locale.MODULE_GIVE_BONUSES_GIVE_SUCCESS='Операция выполнена успешно';
+wowPortal.locale.MODULE_GIVE_BONUSES_WINDOW_TITLE='Добавить бонусы для {0}';
+wowPortal.locale.MODULE_GIVE_BONUSES_WINDOW_BONUSES_LABEL='Добавить бонусов';
+wowPortal.locale.MODULE_GIVE_BONUSES_WINDOW_COMMENT_LABEL='Комментарий';
+
+wowPortal.locale.MODULE_BUY_CHARACTER_TITLE='Выкуп персонажей';
+wowPortal.locale.MODULE_BUY_CHARACTER_TITLE_EXTEND='Выкуп забытых и заброшенных персонажей.';
+wowPortal.locale.MODULE_BUY_CHARACTER_HINT='Нажмите F5, чтобы обновить список персонажей.';
+wowPortal.locale.MODULE_BUY_CHARACTER_CONFIRMATION='Вы действительно хотите приобрести персонажа "{0}"?'; // {0} имя персонажа
+wowPortal.locale.MODULE_BUY_CHARACTER_CONFIRMATION_TITLE='Выкуп персонажа';
+wowPortal.locale.MODULE_BUY_CHARACTER_BUY_ERROR='Операция не прошла! Обратитесь к администратору.';
+wowPortal.locale.MODULE_BUY_CHARACTER_BUY_SUCCESS='Операция выполнена успешно.';
+wowPortal.locale.MODULE_BUY_CHARACTER_HEADER_BUY='Купить персонажа';
+wowPortal.locale.MODULE_BUY_CHARACTER_HEADER_PRICE='Стоимость';
+
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_NAME='Название';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_PRICE='Цена (бонусов)';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_COUNT='Количество';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_BUY='Купить';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_ID='ID';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_ITEM_LEVEL='Уровень маунта';
+wowPortal.locale.MODULE_BUY_MOUNT_HEADER_REQUIRED_LEVEL='Требуемый уровень';
+wowPortal.locale.MODULE_BUY_MOUNT_PANEL_EMPTY_MSG='Нет маунтов';
+wowPortal.locale.MODULE_BUY_MOUNT_CONFIRMATION='Вы действительно хотите приобрести маунта "{0}"?'; // {0} имя маунта
+wowPortal.locale.MODULE_BUY_MOUNT_CONFIRMATION_TITLE='Выкуп маунта';
+wowPortal.locale.MODULE_BUY_MOUNT_PANEL_EMPTY_MSG='Нет маунтов';
+wowPortal.locale.MODULE_BUY_MOUNT_PANEL_RANGE_MSG='Показаны маунты {0} - {1} (всего {2})';
+wowPortal.locale.MODULE_BUY_MOUNT_BUY_ERROR='Операция не прошла! Обратитесь к администратору.';
+wowPortal.locale.MODULE_BUY_MOUNT_BUY_SUCCESS='Операция выполнена успешно.';
+
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_PRICE='Цена (бонусов)';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_DELETE_TIME='Время удаления';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_HEADER_BUY='Купить';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_EMPTY_MSG='Нет персонажей для восстановления';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_CONFIRMATION='Вы действительно хотите восстановить персонажа "{0}"?'; // {0} имя персонажа
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_CONFIRMATION_TITLE='Восстановление персонажа';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_RECOVERY_SUCCESS='Операция выполнена успешно.';
+wowPortal.locale.MODULE_CHARACTER_RECOVERY_RECOVERY_ERROR='Операция не прошла! Обратитесь к администратору.';
+
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_GRID_TITLE='Список загруженных персонажей';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_NAME='Имя персонажа';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_SOURCE_WORLD='Исходный мир';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_REALM='Реалм мира';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_TARGET_WORLD='В какой мир перенести';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_ACCOUNT='На какой аккаунт';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_STATE='Текущее состояние';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_CHAR_NAME='Имя персонажа';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_CREATION_TIME='Дата создания';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGN_ACCOUNT='Аккаунт';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_FOREIGHN_PASSWORD='Пароль';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_HEADER_ACTIONS='Действия';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_EMPTY_MSG='Нет персонажей';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_INTRO_TITLE='Трансферт персонажей только с других проектов';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_INTRO_TEXT=
+	'<p>Последнее обновление аддона (для версии 3.3.0-3.3.5) можно скачать здесь ' +
+'<a href="/chardump.zip" target="_blank">chardump.zip</a><br/>' +
+	'Посмотреть видео-мануал c: <a target="_blank" href="/Transfert_Manual.avi">нашего сервера</a><br/>' +
+	'Посмотреть видео-мануал c: <a target="_blank" href="http://www.youtube.com/watch?v=ob_N__Y9CK4">YouTube</a></p>' +
+'<p>Для переноса персонажа, необходимо установить аддон и воспользоваться командой /chardump.<br>После выхода из игры, ' +
+	'созданный дамп будет находиться в каталоге: <br/>WTF\\Account\\Имя вашего аккаунта\\SavedVariables\\ Фаил chardump.lua. ' +
+	'Его и требуется закачать.<br><b style="color:red">Все загруженные персонажи доступны для просмотра в тестовом игровом мире ' +
+	'WoW Circle Transfert</b></p>';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_INSPECT_PANEL_TITLE='Панель инспектора';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_LEGEND_TITLE='Легенда';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_LEGEND_TEXT='Текущее состояние: <ul><li>Created, Aborted - Означает, что при закачивании произошла ошибка. Обратитесь к Администрации logon3</li>' +
+		'<li>Loaded - Персонаж загружен в мир Transfert и ждет одобрения.</li>' +
+		'<li>Inspecting - Персонаж проверяется.</li>' +
+		'<li>Confirmed - Персонаж одобрен и вы можете его переносить в мир.</li>' +
+		'<li>Rejected - Персонаж отклонен.</li><li>Transfered - Персонаж перенесен в мир.</li>' +
+		'<li>Cancelled - Перенос персонажа отменен пользователем.</li></ul>';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_TITLE='Условия и процедура трансферта';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_DETAILS_BUTTON='Подробнее';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CONDITIONS_TEXT=
+	'<p>При несоблюдении условий трансферта, ваша учетная запись на WoWCircle может быть заблокирована, ' +
+	'а персонажи удалены.<br> Персонажи с GearScore выше 5000 трансферту не подлежат, в случае, если ГМ усомнится в происхождении вещей.</p>'  +
+	'<p>Если вы выбрали перенос (а не копирование), то пароль от старой учетной записи обзательно должен совпадать с тем, ' +
+	'что указан вами при переносе, до момента удаления старого персонажа нашим ГМом. <br>В противном случае, ваша учетная запись ' +
+	'на WoWCircle будет заблокирована, а созданный при переносе персонаж удален. <br>Не меняйте пароль на старом сервере, ' +
+	'пока наш ГМ не удалит старого (перенесенного) персонажа.</p>' +
+	'<p>Если вы выбрали копирование (а не перенос), то пароль от старой учетной записи обзательно должен совпадать с тем ' +
+	'что указан вами при копировании, пока персонажа не рассмотрит наш ГМ. В противном случае, копирование не будет ' +
+	'произведено, а персонаж будет автоматически отклонен. <br>Если дамп вашего персонажа рассмотрел наш ГМ, и вы увидели ' +
+	'статус Confirmed или Rejected, то пароль от старой учетной записи прошлого сервера разрешается сменить без последствий.</p>' +
+	'<p style="color: red">Персонажам с суммой более 10000 золотых автоматчески отказываем в переносе.<br> Максимально разрешенная ' +
+	'сумма залота для переноса равна 10000 золотых.</p>';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_TITLE='Расчет стоимости трансферта.';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_LABEL='Персонажа надо';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_OPTION_COPY='Копировать';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_OPERATION_OPTION_MOVE='Переместить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_LEVEL_LABEL='Уровень';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_CALCULATION_COST_LABEL='Стоимость (бонусов)';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_HINT='Укажите ваш логин и пароль аккаунта с другого сервера.<br/>*Необходимо для проверки исходного персонажа.';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_TITLE='Загрузка дампа';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_LABEL='Персонажа надо';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_OPTION_COPY='Копировать';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_OPERATION_OPTION_MOVE='Переместить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_LOGIN_LABEL='Учетная запись(аккаунт)';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_PASSWORD_LABEL='Пароль';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_LABEL='Дамп персонажа';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_BUTTON='Выбрать файл';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_FILE_HINT='Выбирете дамп персонажа, созданный аддоном.';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_UPLOAD_DUMP_UPLOAD_BUTTON='Загрузить персонажа';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_HIDE='Скрыть';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_DELETE='Удалить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_RELOAD='Перегрузить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_ABORT='Прервать';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CANCEL='Отменить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CONFIRM='Подтвердить';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_CREATE='Создать';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_INSPECT='Инспектировать';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_REJECT='Отвергнуть';
+wowPortal.locale.MODULE_CHARACTER_TRANSFER_ACTION_TRANSFER='Перенести';
+wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TITLE='Описание услуги';
+wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TEXT=
+	'Вип статус может быть куплен на любой период времени и дает следующие привилегии в игре:<br /><br />'+
+	'- Вход на любой игровой мир logon без очереди.<br />'+
+	'- Увеличивается опыт за убийство мобов, выполнение квестов, открытие территорий в полтора раза, от рейтов на конкретном сервере.<br />'+
+	'- Также в полтора раза увеличивается кол-во получаемой репутации и хонора.<br />'+
+	'- Доступны команды для открытие банка из любой точки мира(.vip bank) и возвращение в дом без кд(.vip home).';
+wowPortal.locale.MODULE_DONATE_TEXT=
+	'<p><strong>Внимание! Все пожертвования, совершаемые пользователями ресурса, являются добровольными, '+ 
+	'безвозмездными и не подлежат возврату. Совершая пожертвование, пользователь автоматически соглашается с данными условиями. ' + 
+	'Просьбы о возврате пожертвованных средств Администрацией не рассматриваются, пользователь должен заранее оценить '+ 
+	'преимущества и недостатки, прежде чем совершить пожертвование. Все действия по материальной поддержке проекта ' + 
+	'пользователи совершают на свой страх и риск.</strong></p><br />' + 
+	'<p><strong>Бонусы можно получить следующими способами:</strong></p>' + 
+	'<p><strong>1) Сделав пожертвование проекту. О том, как это сделать написано в данной инструкции:</strong></p> ' + 
+	'<p> - Прочитать и принять <strong><a href="http://wowcircle.com/main/rules.html" target="_blank">соглашение</a></strong>.<br />' + 
+	' - <strong><a href="http://wowcircle.com/main/reg.html" target="_blank">Зарегистрировать</a> ' + 
+	'<a href="http://wowcircle.com/main/reg.html" target="_blank"></a></strong> учетную запись на проекте, выбрав в ' + 
+	'списке &quot;Реалм лист&quot; пункт: <a href="http://wowcircle.com/main/reg.html" target="_blank">' + 
+	'<strong>x5,x10,x15,x20,x25,Cata x25,Cata x100,x300</strong></a> (при выборе, обязательно кликнуть на него, чтобы под списком появилась надпись=' + 
+	'<strong>logon.wowcircle.com</strong>)<br />' + 
+	' - <strong><a href="/" target="_blank">Войти</a></strong> в личный кабинет вашего игрового мира, используя логин и пароль, ' +
+	'указанные при регистрации. (Только для миров <a href="http://wowcircle.com/main/reg.html" target="_blank">' + 
+	'<strong>x5,x10,x15,x20,x25,Cata x25,Cata x100,x300</strong></a>, адреса личных кабинетов для других миров вы можете обнаружить' + 
+	' <a href="http://wowcircle.com/main/cp.html" target="_blank"><strong>ТУТ</strong></a>.<br />' + 
+	' - В главном меню, нажать кнопку <a href="#payment"><strong>&quot;Пожертвовать&quot;</strong></a>.<br /><br />' + 
+	'  В появившемся меню, вы увидите все возможные способы осуществления пожертвования. Выберите один из них и совершите ' + 
+	'оплату. Длительность начисления бонусов зависит от выбранного способа оплаты. Сумма бонусов   рассчитывается  по принципу=' + 
+	'&quot;1 бонус за 1 рубль&quot;. На полученные бонусы, игрок может  купить экипировку в личном кабинете, дополнительную ' + 
+	'профессию и др. Полный список возможностей вы найдете в <strong><a href="#manage">личном кабинете</a></strong>.</p>' + 
+	'Чтобы посмотреть число бонусов на вашей учетной записи, требуется войти в личный кабинет проекта. Внутри, на ' + 
+	'главной странице, вы увидите надпись &quot;Бонусов:&quot;. Если в поле пусто, значит на данной учетной записи не имеется бонусов. ' + 
+	'В другом случае, в этом поле вы найдете   число, отражающее ваш баланс.<br /><br />' + 
+	'<strong>2) <a href="#votemanual">Проголосовав</a> за проект в рейтинге.</strong></p>';
+
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_CHANGE_TITLE='Сменить e-mail';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_TITLE='Подтверждение e-mail';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_OLD_EMAIL_LABEL='Введите Ваш текущий электронный адрес';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_NEW_EMAIL_LABEL='Введите Ваш НОВЫЙ электронный адрес';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_EMAIL_LABEL='Введите Ваш НОВЫЙ электронный адрес';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_KEY_LABEL='Ключ полученный на новый e-mail';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_TEXT='Сменить e-mail';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_CONFIRM_TEXT='Подтвердить e-mail';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_ERROR='Операция не прошла! Обратитесь к администратору.';
+wowPortal.locale.MODULE_ACCOUNT_EMAIL_SUBMIT_SUCCESS='Операция выполнена успешно.';
+
+wowPortal.locale.LOGIN_WINDOW_SELECT_SMS_PASSWORD_BUTTON_CONFIRM='Подтвердить по SMS';
+wowPortal.locale.LOGIN_WINDOW_SELECT_EMAIL_PASSWORD_BUTTON_CONFIRM='Подтвердить по E-mail';
+
+wowPortal.locale.MODULE_EMAIL_REMINDER_EMAIL_LABEL='Введите Ваш электронный адрес';
+wowPortal.locale.MODULE_EMAIL_REMINDER_LOGIN_LABEL='Введите Ваш логин';
+wowPortal.locale.MODULE_EMAIL_REMINDER_SUBMIT_TEXT='Сменить пароль';
+wowPortal.locale.MODULE_EMAIL_REMINDER_SUBMIT_ERROR='Операция не прошла! Обратитесь к администратору.';
+wowPortal.locale.MODULE_EMAIL_REMINDER_SUBMIT_SUCCESS='Операция выполнена успешно.';
+
+wowPortal.locale.MODULE_PAYMENT_SMS_RUS_TITLE='Смс-оплата(для России)';
+	
+wowPortal.locale.MODULE_PAYMENT_WEBMONEY_TITLE='Переводом WebMoney';
+wowPortal.locale.MODULE_PAYMENT_WEBMONEY_TEXT=
+	'<table style="width: 100%; color: #BEBEBE"><tbody>' +
+	'<tr><td colspan="2">Оплата через <b>Webmoney</b>, кошельки оплаты:</td></tr>' +
+	'<tr><td style="width: 20%">Рубли</td><td>R399099794624</td></tr>' +
+	'<tr><td>Гривны</td><td>U654976762844</td></tr>' +
+	'<tr><td>Доллары</td><td>Z951617959591</td></tr>' +
+	'<tr><td>Евро</td><td>E560669010919</td></tr>' +
+	'</tbody></table><br>' +
+	'<p class="black">' +
+	'    <p>- В комментариях к переводу необходимо указать имя вашего аккаунта и, через пробел, рейты вашего сервера. (Например: Имя аккаунта: account123 Реалм: x5 logon).</p>' +
+	'    <p>- Для платежей через Терминалы или QIWI ознакомьтесь с <a href="http://forum.wowcircle.com/showthread.php?t=55254" target="_blank">данной темой</a>.</p>' +
+	'    <p>- При пожертвовании более чем на 500 бонусов, начисляется дополнительно 10% от суммы пожертвования.</p>' +
+	'    <p>- Бонусы зачисляются на счёт в течение 12-48 часов, без комиссии.</p>' +
+	'    <p>- Если в комментариях были допущены ошибки, бонусы зачислены не будут.</p>' +
+	'    <p>- 1 бонус = 1 рубль, курс других валют считается на момент перевода по ЦБ РФ.</p>' +
+	'</p>';
+wowPortal.locale.MODULE_PAYMENT_SMS_TITLE='СМС-сообщения';
+wowPortal.locale.MODULE_PAYMENT_SMS_TITLE_1='СМС по России с операторов Мегафон, Билайн, МТС';
+wowPortal.locale.MODULE_PAYMENT_ROBOX_TITLE='Робокасса';
+wowPortal.locale.MODULE_ANTI_ERROR_HEADER_ANTI_ERROR='Исправить ошибки';
+wowPortal.locale.MODULE_ANTI_ERROR_CONFIRMATION_TITLE='Anti Error';
+wowPortal.locale.MODULE_ANTI_ERROR_CONFIRMATION='Исправить ошибки для персонажа "{0}"?'; // {0} имя персонажа
+wowPortal.locale.MODULE_ANTI_ERROR_SUCCESS='Операция выполнена успешно.';
+wowPortal.locale.MODULE_ANTI_ERROR_ERROR='Операция не прошла! Обратитесь к администратору.';
+
+wowPortal.locale.MODULE_MANAGE_DELETE_CHARACTER_PROMPT_TITLE='Удаление персонажа {0}';
+wowPortal.locale.MODULE_MANAGE_DELETE_CHARACTER_PROMPT='Пожалуйста, введите слово "DELETE" для удаления выбранного персонажа.';
+wowPortal.locale.MODULE_MANAGE_DELETE_CHARACTER_SUCCESS='Ваш персонаж {0} удалён';
+wowPortal.locale.MODULE_MANAGE_INFO_TITLE='Общая информация';
+wowPortal.locale.MODULE_MANAGE_INFO_ACCOUNT_MODE_LABEL='Режим аккаунта';
+wowPortal.locale.MODULE_MANAGE_INFO_EMAIL_LABEL='Почтовый адрес';
+wowPortal.locale.MODULE_MANAGE_INFO_CHANGE_ACCOUNT_TYPE_BTN='Изменить';
+wowPortal.locale.MODULE_MANAGE_INFO_LAST_LOGIN_LABEL='Последний вход';
+wowPortal.locale.MODULE_MANAGE_INFO_ACC_SALE_WARNING='Внимание! Если в течении {0} дня(ей) Вы не зайдете в игровой мир, Ваш аккаунт будет считаться заброшенным';
+wowPortal.locale.MODULE_MANAGE_INFO_LAST_IP_LABEL='Последний IP';
+wowPortal.locale.MODULE_MANAGE_INFO_LOCKED_LABEL='Привязка к IP';
+wowPortal.locale.MODULE_MANAGE_INFO_BANNED_LABEL='Забанен';
+wowPortal.locale.MODULE_MANAGE_INFO_ACCOUNT_TYPE_LABEL='Тип аккаунта';
+wowPortal.locale.MODULE_MANAGE_INFO_ONLINE_LABEL='В игре';
+wowPortal.locale.MODULE_MANAGE_INFO_BONUS_COUNT_LABEL='Бонусов';
+wowPortal.locale.MODULE_MANAGE_INFO_DONATE_BTN='Пожертвовать';
+wowPortal.locale.MODULE_MANAGE_INFO_FREEZED_LABEL='Заморожен';
+wowPortal.locale.MODULE_MANAGE_INFO_FREEZE_ACCOUNT_BTN='Заморозить аккаунт';
+wowPortal.locale.MODULE_MANAGE_CHARACTERS_LIST_TITLE='Персонажи';
+wowPortal.locale.MODULE_MANAGE_CHARACTERS_LIST_HINT='Дважды кликните на персонажа чтобы удалить его';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_LABEL='Режим аккаунта';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_PARIOD_LABEL_TPL='от {0} до {1}. ({2})';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_0='В ожидании';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODE_1='Активно';
+wowPortal.locale.MODULE_MANAGE_CHANGE_ACCOUNT_TYPE_TITLE='Выберите новый тип аккаунта';
+wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_TITLE='Заморозить аккаунт';
+wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_DAYS_LABEL='Введите число дней заморозки';
+wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_COST_LABEL='Стоимость дня заморозки';
+wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_TOTAL_COST_LABEL='Конечная стоимость';
+wowPortal.locale.MODULE_MANAGE_FREEZE_ACCOUNT_NOT_ENOUGHT_BONUSES='У Вас не достаточно бонусов даже на 1 день заморозки!';
+wowPortal.locale.MODULE_MANAGE_INFO_UNBAN_ACCOUNT_BTN='Разбанить';
+wowPortal.locale.MODULE_MANAGE_INFO_CHANGE_ACCOUNT_MODE_BTN='Сменить режим';
+wowPortal.locale.MODULE_MANAGE_INFO_LOCK_ACCOUNT_BTN='Привязать к IP';
+wowPortal.locale.MODULE_MANAGE_INFO_UNLOCK_ACCOUNT_BTN='Разблокировать';
+wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_TITLE='Снять бан с аккаунта';
+wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_DAYS_LABEL='На сколько дней снять бан';
+wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_COST_LABEL='Стоимость дня снятия бана';
+wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_TOTAL_COST_LABEL='Конечная стоимость';
+wowPortal.locale.MODULE_MANAGE_UNBAN_ACCOUNT_NOT_ENOUGHT_BONUSES='У Вас не достаточно бонусов даже на 1 день снятия бана!';
+wowPortal.locale.MODULE_MANAGE_INFO_MUTED_LABEL='Мут';
+wowPortal.locale.MODULE_MANAGE_INFO_UNMUTE_ACCOUNT_BTN='Снять мут';
+wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_TITLE='Снять мут';
+wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_HOURS_LABEL='Введите количество часов';
+wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_COST_LABEL='Стоимость часа снятия мута';
+wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_TOTAL_COST_LABEL='Конечная стоимость';
+wowPortal.locale.MODULE_MANAGE_UNMUTE_ACCOUNT_NOT_ENOUGHT_BONUSES='У Вас не достаточно бонусов даже на 1 час снятия мута!';
+wowPortal.locale.MODULE_MANAGE_TILL_TPL='(до {0})';
+wowPortal.locale.MODULE_MANAGE_BANNED_REASON_TPL='{0} (забанил {1})';
+wowPortal.locale.MODULE_MANAGE_INFO_BAN_REASON='Причина бана';
+
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_MODES_LABEL='Режим аккаунта';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_TITLE='Сменить режим';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_MODES_LABEL='Режим';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_FROM_LABEL='Активировать с';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_TO_LABEL='До';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_COST_LABEL='Итоговая стоимость';
+wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_CHANGE_SUCCESS='Режим успешно изменён';
+
+wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_TITLE='Заблокировать аккаунт';
+wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_IP_LABEL='Введите IP адрес';
+wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_COST_LABEL='Стоимость блокировки';
+wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_PROMPT_TITLE='Блокировка аккаунта';
+wowPortal.locale.MODULE_MANAGE_LOCK_ACCOUNT_PROMPT=
+'Заблокировать аккаунт?<br/>'+
+'Внимание, убедитесь, что у вас статический IP адрес, а не динамический.';
+
+wowPortal.locale.MODULE_MANAGE_UNLOCK_ACCOUNT_PROMPT='Разблокировать аккаунт?';
+
+wowPortal.locale.MODULE_BONUSES_HEADER_NAME='Название бонус услуги';
+wowPortal.locale.MODULE_BONUSES_HEADER_COST='Стоимость';
+wowPortal.locale.MODULE_BONUSES_HEADER_BUY='Заказать услугу';
+wowPortal.locale.MODULE_BONUSES_EMPTY_MSG='Нет доступных услуг';
+wowPortal.locale.MODULE_BONUSES_BUY_SUCCESS_MESSAGE='Операция выполнена успешно. Списано бонусов: {0}.';
+
+wowPortal.locale.COMMON_BUY_WINDOW_CHARACTERS_GRID_TITLE='Выберите персонажа, для которого делается приобретение:';
+
+wowPortal.locale.BUY_TITLE_WINDOW_TITLE='Приобретение звания';
+wowPortal.locale.BUY_TITLE_WINDOW_TITLES_GRID_TITLE='Выберите звание:';
+wowPortal.locale.BUY_TITLE_WINDOW_HEADER_TITLE='Звание';
+wowPortal.locale.BUY_TITLE_WINDOW_HEADER_PRICE='Стоимость (бонусов)';
+
+wowPortal.locale.BUY_PROFESSION_WINDOW_TITLE='Приобретение профессии';
+wowPortal.locale.BUY_PROFESSION_WINDOW_PROFESSIONS_GRID_TITLE='Выберите профессию:';
+wowPortal.locale.BUY_PROFESSION_WINDOW_HEADER_TITLE='Профессия';
+wowPortal.locale.BUY_PROFESSION_WINDOW_HEADER_PRICE='Стоимость (бонусов)';
+
+wowPortal.locale.BUY_LEVEL_UP_WINDOW_LEVEL_LABEL='До какого уровня прокачать';
+wowPortal.locale.BUY_LEVEL_UP_WINDOW_COST_LABEL='Стоимость добавления 1го уровня';
+wowPortal.locale.BUY_LEVEL_UP_WINDOW_TOTAL_COST_LABEL='Конечная стоимость';
+wowPortal.locale.BUY_LEVEL_UP_WINDOW_HINT='Выберите персонажа с уровнем от {0} до {1}';
+
+wowPortal.locale.BUY_LEVEL_UP_TO_WINDOW_HINT='Выберите персонажа с уровнем до {0}';
+
+wowPortal.locale.BUY_MONEY_WINDOW_COST_LABEL='Цена за единицу (кучу)';
+wowPortal.locale.BUY_MONEY_WINDOW_COUNT_LABEL='Сколько единиц';
+wowPortal.locale.BUY_MONEY_WINDOW_TOTAL_COST_LABEL='Конечная стоимость';
+
+wowPortal.locale.SEND_MESSAGE_WINDOW_NAME_LABEL='Кому послать сообщение';
+wowPortal.locale.SEND_MESSAGE_WINDOW_TITLE_LABEL='Заголовок';
+wowPortal.locale.SEND_MESSAGE_WINDOW_MESSAGE_LABEL='Текст сообщения';
+wowPortal.locale.SEND_MESSAGE_WINDOW_FIND_BUTTON='Найти';
+wowPortal.locale.SEND_MESSAGE_WINDOW_FINDED_LABEL='Найденный персонаж';
+
+wowPortal.locale.BUY_REPUTATION_WINDOW_REPUTATIONS_GRID_TITLE='Выберите репутацию';
+wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_NAME='Название';
+wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_STANDING='Кол-во';
+wowPortal.locale.BUY_REPUTATION_WINDOW_HEADER_PRICE='Стоимость';
+wowPortal.locale.BUY_REPUTATION_WINDOW_GRID_EMPTY_MSG='Нет репутаций';
+
+wowPortal.locale.CHANGE_RACE_WINDOW_RACES_GRID_TITLE='Выберите новую рассу';
+wowPortal.locale.CHANGE_RACES_WINDOW_HEADER_NAME='Расса';
+
+wowPortal.locale.MOVE_CHARACTER_WINDOW_ACCOUNT_TITLE='Аккаунт';
+wowPortal.locale.MOVE_CHARACTER_WINDOW_ACCOUNT_HEADER_NAME='Аккаунт';
+wowPortal.locale.MOVE_CHARACTER_WINDOW_NAME_LABEL='Аккаунт';
+wowPortal.locale.MOVE_CHARACTER_WINDOW_FIND_BUTTON='Найти';
+
+wowPortal.locale.MODULE_BAN_LIST_HEADER_NAME='Пользователь';
+wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_FROM='Время бана';
+wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_TO='Время разбана';
+wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_REASON='Причина последнего бана';
+wowPortal.locale.MODULE_BAN_LIST_HEADER_BAN_AUTHOR='Кто забанил';
+wowPortal.locale.MODULE_BAN_LIST_EMPTY_MSG='Нет забаненных';
+wowPortal.locale.MODULE_BAN_LIST_RANGE_MSG='Показаны пользователи {0} - {1} (всего {2})';
+
+wowPortal.locale.LOGIN_WINDOW_TITLE='Авторизация в ЛК';
+wowPortal.locale.LOGIN_WINDOW_USERNAME_LABEL='Введите Ваш логин';
+wowPortal.locale.LOGIN_WINDOW_PASSWORD_LABEL='Введите Ваш пароль';
+wowPortal.locale.LOGIN_WINDOW_CAPTCHA_LABEL='Проверочный код';
+wowPortal.locale.LOGIN_WINDOW_SUBMIT_TEXT='Вход';
+wowPortal.locale.LOGIN_WINDOW_REGISTER_BUTTON='Регистрация';
+wowPortal.locale.LOGIN_WINDOW_REGISTER_TEXT='Введите логин и пароль Вашей учётной записи, чтобы войти в личный кабинет.';
+wowPortal.locale.LOGIN_WINDOW_NOTIFY_PASSWORD_BUTTON='Напомнить пароль';
+//wowPortal.locale.LOGIN_WINDOW_NOTIFY_PASSWORD_TEXT='Если Вы забыли свой пароль, то данный сервис позволит Вам его вспомнить. Вам будет выслано письмо на e-mail, указанный при регистрации.';
+
+wowPortal.locale.PASSWORD_NOTIFY_WINDOW_TITLE='Напомнить пароль';
+wowPortal.locale.PASSWORD_NOTIFY_WINDOW_USERNAME_LABEL='Введите Ваш логин';
+wowPortal.locale.PASSWORD_NOTIFY_WINDOW_EMAIL_LABEL='Введите Ваш электронный адрес';
+wowPortal.locale.PASSWORD_NOTIFY_WINDOW_SUBMIT_TEXT='Напомнить пароль';
+
+wowPortal.locale.REGISTER_WINDOW_TITLE='Регистрация в ЛК';
+wowPortal.locale.REGISTER_WINDOW_USERNAME_LABEL='Введите Ваш логин';
+wowPortal.locale.REGISTER_WINDOW_PASSWORD_LABEL='Введите Ваш пароль';
+wowPortal.locale.REGISTER_WINDOW_PASSWORD2_LABEL='Повторить пароль';
+wowPortal.locale.REGISTER_WINDOW_EMAIL_LABEL='Адрес e-mail';
+wowPortal.locale.REGISTER_WINDOW_EMAIL_HINT=
+	'Введите действующий электронный ящик. Он будет использоваться для восстановления доступа '  +
+	'к вашему аккаунту и для смены пароля. Рекомендуемые почтовые сервисы: Mail, Yandex, Gmail.<br/>' +
+	'После регистрации на вашу почту письмо НЕ приходит. Вы можете свободно начинать играть!';
+wowPortal.locale.REGISTER_WINDOW_CAPTCHA_LABEL='Проверочный код';
+wowPortal.locale.REGISTER_WINDOW_SUBMIT_TEXT='Регистрация';
+wowPortal.locale.REGISTER_WINDOW_HINT_TEXT='При создании пароля учётной записи используйте только латинские буквы и цифры, в противном случае, у Вас могут возникнуть проблемы со входом в учётную запись.';
+wowPortal.locale.REGISTER_WINDOW_BOTTOM_HINT_TEXT='Регистрируясь, Вы автоматически <a href="http://wowcircle.com/main/rules.html" target="_blank">принимаете</a> условия системы.';
+wowPortal.locale.REGISTER_WINDOW_PASSWORDS_NOT_MATCH='Пароли не совпадают';
+
+wowPortal.locale.MODULE_RULES_TEXT=
+	'<ol><li>Запрещаются любого рода махинации при использовании личного кабинета, т.к наши веб сервисы не совершенны, на них могут быть различные ошибки и эксплоиты, за их сокрытие и использование багов веб сервисов, учетная запись перманентно будет заблокирована администрацией проекта (или более строгое наказание, на усмотрение администрации).<br/>' +
+		'Если вы обнаружили какие-либо ошибки в работе личного кабинета, немедленно сообщите о них администратору (анонимность гарантируется).</li>' +
+	'<li>Если при пополнении счета через смс сервис, вам не пришли бонусы, то в 99% случаях - это ваши проблемы, или ваших операторов. Восстановление в данном случае не производится, но возможны исключения на усмотрения администрации проекта.<br/>' + 
+		'В случае сбоя на нашей стороне, вам будет сообщено об этом и всем кто пополнял счет в этот период, бонусы будут начислены на счет в течении 1 недели.</li>' +
+	'<li>При пополнении счета через webmoney, вы можете рассчитывать на полное восстановление средств в случае, если они вам не дошли через 72 часа после оплаты, но возможен отказ в начислении бонусов, если вы сами совершили ошибки при переводе средств.</li>' +
+	'<li>При выборе услуги за бонусы пользователь обязан сам узнать все последствия , к которым может привести та или иная услуга. Если пользователь был не в курсе об изменении персонажа или против его воли пытались провести какие-либо действия, Администрация не несёт ответственности за это. Предварительно ищите как можно больше информации по услуге, свяжитесь с оператором технической поддержке в Личном кабинете или обратитесь к Игровым мастерам.</li>' +
+	'<li>Покупая предмет на своего персонажа, проверьте многократно соответствует ли он нужному уровню, соответствует ли фракции и другим нужным характеристикам.<br/>' +
+		'Внимательно отнеситесь к безуровневым предметам, на части игровых миров их возможно использоваться только для прокачивания персонажей, при других способах использования Игровой мастер может вас заблокировать.<br/>' +
+		'Так же касается и профессий на части игровых миров, нельзя использовать предметы профессии, которые превышают уровень персонажа. За это вы тоже можете получить блокировку учётной записи от Игровых Мастеров.</li>' +
+	'<li>Важно: При покупке любой услуги в магазине, персонаж, на которого покупается услуга, не должен находиться в игре. Игровой клиент рекомендуем закрыть. Так же рекомендуем Удалить все временные файлы.<br/>' +
+		'Найдите вашу папку с World of Warcraft (по умолчанию, она находится C:\\Program Files\\World of Warcraft\\) Полностью удалите все файлы из папок Cache и WTF. Эти файлы будут воссозданы игрой при первом запуске.</li>' +
+	'<li>Услуги купленные в магазине как правило выполняются мгновенно, если через 1 час услуга не была вам оказана, то скорее всего вы ошиблись персонажем или не соблюдали правила пользования личным кабинетом, шанс сбоя на нашей стороне до 5%, по этому восстановления в данных случаях, если услуга вам не будет оказана, не производится.</li>' +
+	'<li>Если Личный кабинет не доступен, услуги не предоставляются, ошибочные заказы не обрабатываются, бонусы не возвращаются. Всегда проверяйте не проходят ли технические работы на сервере, нет ли сбоев сейчас. Если после падения сервера произошел откат, то восстановление также не производится.</li>' +
+	'<li>Если вы заказали какую-либо услугу по ошибке другому персонажу или заказали не тот предмет. Возврата и обмена не производится, прошу ознакомиться с пунктом 5 данных правил Личного кабинета. Просьбы такие не рассматриваются ни в общем, ни в индивидуальном порядке.</li>' +
+	'<li>При затруднительных ситуациях и консультации по работе Личного кабинета, вы всегда можете обратиться к операторам технической поддержки пользователей, нажав на банер.</li></ol>';
+
+wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TITLE='Описание услуги';
+wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TEXT=
+	'Вип статус может быть куплен на любой период времени и дает следующие привилегии в игре:<br /><br />'+
+	'- Вход на любой игровой мир logon без очереди.<br />'+
+	'- Увеличивается опыт за убийство мобов, выполнение квестов, открытие территорий в полтора раза, от рейтов на конкретном сервере.<br />'+
+	'- Также в полтора раза увеличивается кол-во получаемой репутации и хонора.<br />'+
+	'- Доступны команды для открытие банка из любой точки мира(.vip bank) и возвращение в дом без кд(.vip home).';
+
+	
+wowPortal.locale.MAIN_PAGE_VOTE_MANUAL_TITLE='Инструкция по голосованию';
+wowPortal.locale.MAIN_PAGE_VOTE_HINT='<b style="color: red">ВНИМАНИЕ!</b> Голоса за MMOVOTE учитываются раз в сутки, на основе статистики предоставляемой этим рейтингом.';
+wowPortal.locale.MAIN_PAGE_VOTE_MANUAL_TEXT= 'Для того чтобы проголосовать за сервер, перейдите в раздел меню Голосование, после чего кликайте по кнопкам рейтингов, следуйте дальнейшим инструкциям на самом рейтинге и получайте бонусы.'; 
+
+wowPortal.locale.MAIN_PAGE_INFO_OPERATOR_ICON='';
+wowPortal.locale.MAIN_PAGE_USER_NAVIGATION_TITLE='Навигация';
+wowPortal.locale.MAIN_PAGE_ADMIN_NAVIGATION_TITLE='Администрирование';
+wowPortal.locale.MAIN_PAGE_ADDITIONAL_TITLE='Полезное';
+wowPortal.locale.MAIN_PAGE_CHECK_AUTH='Проверка авторизации';
+wowPortal.locale.MAIN_PAGE_LOGINING='Авторизация';
+
+wowPortal.locale.MODULE_WELCOME_TITLE='Добро пожаловать';
+wowPortal.locale.MODULE_WELCOME_TEXT='Добро пожаловать, авторизуйтесь, тратьте бонусы.';
+
+wowPortal.locale.MODULE_COMMAND_LOG_HEADER_TIME='Время';
+wowPortal.locale.MODULE_COMMAND_LOG_HEADER_REALM='Реалм';
+wowPortal.locale.MODULE_COMMAND_LOG_HEADER_TYPE='Тип';
+wowPortal.locale.MODULE_COMMAND_LOG_HEADER_STRING='Текст';
+wowPortal.locale.MODULE_COMMAND_LOG_EMPTY_MSG='Нет комманд';
+wowPortal.locale.MODULE_COMMAND_LOG_RANGE_MSG='Показаны комманды {0} - {1} (всего {2})';
+
+wowPortal.locale.MODULE_ARENA_LOG_HEADER_TIME='Время';
+wowPortal.locale.MODULE_ARENA_LOG_HEADER_REALM='Реалм';
+wowPortal.locale.MODULE_ARENA_LOG_HEADER_TYPE='Тип';
+wowPortal.locale.MODULE_ARENA_LOG_HEADER_STRING='Текст';
+wowPortal.locale.MODULE_ARENA_LOG_EMPTY_MSG='Нет данных';
+wowPortal.locale.MODULE_ARENA_LOG_RANGE_MSG='Показаны записи {0} - {1} (всего {2})';
+
+wowPortal.locale.MODULE_ACCOUNT_LOG_ACCOUNT_LABEL='Аккаунт ID';
+wowPortal.locale.MODULE_ACCOUNT_LOG_FILTER='Фильтр';
+wowPortal.locale.MODULE_ACCOUNT_LOG_EMPTY_MSG='Нет записей';
+wowPortal.locale.MODULE_ACCOUNT_LOG_RANGE_MSG='Показаны записи {0} - {1} (всего {2})';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_DATE='Дата';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_SERVER='Сервер';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_TYPE='Тип';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_IP='IP';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_MESSAGE='Сообщение';
+wowPortal.locale.MODULE_ACCOUNT_LOG_HEADER_SCOPEID='Скоп ID';
+
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_WORLD_SUBMIT_BTN='Перенести';
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_WORLD_GRID_TITLE='Выберите персонажей';
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_WORLD_WORLDS_COMBO_LABEL='Выберите мир (куда перенести)';
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_WORLD_WORLDS_COMBO_EMPTY_TEXT='С данного сервера переносы запрещены';
+
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_SUBMIT_BTN='Перенести';
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_GRID_TITLE='Выберите персонажей';
+
+wowPortal.locale.MODULE_SMS_LOG_HEADER_PHONE='Телефон';
+wowPortal.locale.MODULE_SMS_LOG_HEADER_OPERATOR='Оператор';
+wowPortal.locale.MODULE_SMS_LOG_HEADER_SHORT_PHONE='Кор-й номер';
+wowPortal.locale.MODULE_SMS_LOG_HEADER_MESSAGE='Сообщение';
+wowPortal.locale.MODULE_SMS_LOG_HEADER_DATE='Дата';
+wowPortal.locale.MODULE_SMS_LOG_HEADER_FROD='Фрод';
+wowPortal.locale.MODULE_SMS_LOG_EMPTY_MSG='Нет данных';
+wowPortal.locale.MODULE_SMS_LOG_RANGE_MSG='Показаны записи {0} - {1} (всего {2})';
+wowPortal.locale.MODULE_CHARACTER_MOVE_TO_ACCOUNT_ACCOUNT_LABEL='Выберите аккаунт (куда перенести)'

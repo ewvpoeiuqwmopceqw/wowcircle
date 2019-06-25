@@ -1,0 +1,17 @@
+Ext.define('wowPortal.model.IssueList', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'id',
+        'created',
+        'description',
+        'duedate',
+        'fixVersions',
+        'issuetype',
+        'key',
+        'priority',
+        'status',
+        'summary',
+        'updated',
+        'votes'
+    ]
+});

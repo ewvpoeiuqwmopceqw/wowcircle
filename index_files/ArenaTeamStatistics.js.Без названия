@@ -1,0 +1,20 @@
+/*
+ * Model: Arena Team Statistics
+ */
+
+Ext.define('wowPortal.model.ArenaTeamStatistics', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'arenaTeamId',
+        'name',
+        'captainGuid',
+        'charName',
+        'type',
+        'rating',
+        'seasonGames',
+        'seasonWins',
+        'seasonLose',
+        'rank'
+    ]
+});

@@ -1,0 +1,40 @@
+/*
+ * Model: Transfering Charaters
+ */
+
+Ext.define('wowPortal.model.TransferingCharaters', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        {name: 'Actions_Hide', mapping: 'Actions.Hide'},
+        {name: 'Actions_Delete', mapping: 'Actions.Delete'},
+        {name: 'Actions_Reload', mapping: 'Actions.Reload'},
+        {name: 'Actions_Abort', mapping: 'Actions.Abort'},
+        {name: 'Actions_Cancel', mapping: 'Actions.Cancel'},
+        {name: 'Actions_Confirm', mapping: 'Actions.Confirm'},
+        {name: 'Actions_Create', mapping: 'Actions.Create'},
+        {name: 'Actions_Inspect', mapping: 'Actions.Inspect'},
+        {name: 'Actions_Reject', mapping: 'Actions.Reject'},
+        {name: 'Actions_Transfer', mapping: 'Actions.Transfer'},
+        'acc_username',
+        'account',
+        'ch',
+        'charguid',
+        'charlevel',
+        'charname',
+        'copyPrice',
+        'creationtime',
+        'foreign_account',
+        'foreign_password',
+        'hash',
+        'inspector',
+        'isRemove',
+        'realmlist',
+        'realmname',
+        'removePrice',
+        'status',
+        'toServer',
+        'toServerId',
+        'valid'
+    ]
+});

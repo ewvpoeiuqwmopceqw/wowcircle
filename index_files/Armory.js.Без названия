@@ -1,0 +1,23 @@
+Ext.define('wowPortal.module.Armory', {
+    extend: 'wowPortal.module.CommonIFrame',
+
+//    id: 'wow-armory',
+
+//    loadFrameAfter: 'show',
+
+    initComponent: function() {
+        this.frameSrc = wowPortal.data.armoryURL || 'about:blank';
+        this.callParent(arguments);
+    },
+
+    __onFrameLoad: function() {
+        //var src = this.__frame[0].contentWindow.location.pathname;
+        var src = this.__frame.dom.src;
+        // if frame loaded non WowArmory page - redirect main page to root
+        if (-1 == Ext.Array.indexOf(['', 'blank', '/blank'],src) && !src.match(/\/wowarmory\//)) {
+            window.location.href = '/';
+        } else {
+            this.callParent(arguments);
+        }
+    }
+});

@@ -1,0 +1,7 @@
+Ext.namespace(
+    'wowPortal',
+    'wowPortal.user',
+    'wowPortal.data',
+    'wowPortal.component',
+    'wowPortal.module'
+);

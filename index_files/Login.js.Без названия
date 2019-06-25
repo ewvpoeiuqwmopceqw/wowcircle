@@ -1,0 +1,189 @@
+/*
+ * Dialog: Login
+ */
+
+Ext.define('wowPortal.module.dialog.Login', {
+    extend: 'Ext.Window',
+    ui: 'login',
+    shadow: false,
+    width: 800,
+    height: 540,
+    style: 'padding: 150px 90px 60px 90px',
+    border: false,
+    modal: true,
+    resizable: false,
+    draggable: false,
+    closable: false,
+
+    //title: wowPortal.locale.LOGIN_WINDOW_TITLE,
+    __captchaImgSrc: '/skins/app/images/secret_key.jpg',
+
+    initComponent: function() {
+        Ext.apply(this, {
+            layout: {
+                type: 'border'
+            },
+            items: [{
+                ui: 'login',
+                xtype: 'form',
+                style: 'margin: 10px 0 10px 10px;',
+                bodyPadding: 10,
+                rowspan: 2,
+                width: 320,
+                itemId: 'form',
+                region: 'west',
+                scope:this,
+                defaults: {
+                    labelWidth: 130,
+                    anchor: '100%',
+                    style: 'margin: 20px 0px'
+                },
+                items: [{
+                    xtype: 'textfield',
+                    itemId: 'username',
+                    style: 'margin: 10px 0px 20px 0px',
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_USERNAME_LABEL,
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'password',
+                    inputType: 'password',
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_PASSWORD_LABEL,
+                    allowBlank: false
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    layout: 'hbox',
+                    items: [{
+                        xtype: 'box',
+                        itemId: 'captcha-img',
+                        style: 'text-align: center; margins: 5px 0 5px 0;'
+                    }, {
+                        xtype: 'button',
+                        itemId: 'refresh-captcha',
+                        text: '',
+                        scope: this,
+                        cls: 'refresh-captcha',
+                        iconCls: 'refresh-captcha-icon',
+                        handler: this.updateCaptcha
+                    }]
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'captcha',
+                    fieldStyle: 'text-transform:uppercase',
+                    anchor: '',
+                    width: 250,
+                    fieldLabel: wowPortal.locale.LOGIN_WINDOW_CAPTCHA_LABEL,
+                    allowBlank: false,
+                    scope: this,
+                    listeners:{
+                        scope:this,
+                        change: function(field, newValue, oldValue){
+                            field.setValue(newValue.toUpperCase());
+                        },
+                        //echoPlex
+                        specialkey: function(field, event) {
+                            if (event.getKey() == event.ENTER) {
+                                this.__loginButton.handler.call(this.__loginButton.scope);
+                            }
+                        }
+                        //----
+                    }
+                }, {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: '&nbsp;',
+                    labelSeparator: '',
+                    layout: 'hbox',
+                    style: 'margin: 0 5 0 0',
+                    items: [{
+                        xtype: 'button',
+                        ui: 'red',
+                        itemId: 'login',
+                        disabled: true,
+                        //width: 80,
+                        flex: 1,
+                        text: wowPortal.locale.LOGIN_WINDOW_SUBMIT_TEXT,
+                        scope: this,
+                        margins: '0 5 0 0',
+                        handler: function() {
+                            var username = this.__usernameField.getValue();
+                            var password = this.__passwordField.getValue();
+                            var captcha = this.__captchaField.getValue();
+                            Ext.callback(this.callback, this.callbackScope || window, [username, password, captcha]);
+                        }
+                    }, {
+                        xtype: 'button',
+                        flex: 1,
+                        text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                        scope: this,
+                        handler: function() {
+                            this.__usernameField.setValue('')
+                            this.__passwordField.setValue('')
+                            this.__captchaField.setValue('')
+                            //Ext.callback(this.closeCallback, this.callbackScope || window);
+                            //this.close();
+                        }
+                    }]
+                }, {
+                        xtype: 'box',
+                        html: wowPortal.locale.LOGIN_WINDOW_MAIN_SITE_ABOUT
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__loginButton.setDisabled(!valid);
+                    }
+                }
+            }, {
+                xtype: 'container',
+                style: 'margin: 0 0px 0 0',
+                region: 'center',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                }, {
+                    xtype: 'panel',
+                    ui: 'login',
+                    style: 'margin: 10px',
+                    bodyPadding: 10,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    flex: 3,
+                    items: [{
+                        xtype: 'button',
+                        margins: '5px 40px 10px 40px',
+                        text: wowPortal.locale.LOGIN_WINDOW_NOTIFY_PASSWORD_BUTTON,
+                        scope: this,
+                        handler: function(win) {
+                            this.close();
+                            wowPortal.viewport.showSelectPasswordWindow();
+                        }
+                    }, {
+                        xtype: 'box',
+                        html: wowPortal.locale.LOGIN_WINDOW_NOTIFY_PASSWORD_TEXT
+                    }, {
+                        xtype: 'box',
+                        html: wowPortal.locale.LOGIN_WINDOW_LANGUAGE_LINKS
+                    }]
+                }]
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__loginButton = this.down('#login');
+        this.__usernameField = this.down('#username');
+        this.__passwordField = this.down('#password');
+        this.__captchaField = this.down('#captcha');
+        this.__captchaImg = this.down('#captcha-img');
+        this.updateCaptcha();
+    },
+
+    updateCaptcha: function() {
+        this.__captchaImg.update('<img src="' + this.__captchaImgSrc + '?_nc=' + (new Date().getTime()) + '" width="125" height="30"/>');
+    }
+});

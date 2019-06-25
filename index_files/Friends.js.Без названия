@@ -1,0 +1,14 @@
+/*
+ * Model: Friends
+ */
+
+Ext.define('wowPortal.model.Friends', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        'fkey',
+        'name',
+        'online',
+        'note'
+    ]
+});

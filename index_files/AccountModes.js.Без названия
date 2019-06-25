@@ -1,0 +1,13 @@
+/*
+ * Model: Account modes
+ */
+
+Ext.define('wowPortal.model.AccountModes', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'id',
+        'cost',
+        'name'
+    ]
+});

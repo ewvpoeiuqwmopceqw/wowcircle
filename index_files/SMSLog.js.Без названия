@@ -1,0 +1,16 @@
+/*
+ * Model: SMS log
+ */
+
+Ext.define('wowPortal.model.SMSLog', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'phone',
+        'operator',
+        'shortphone',
+        'message',
+        'date',
+        'frod'
+    ]
+});

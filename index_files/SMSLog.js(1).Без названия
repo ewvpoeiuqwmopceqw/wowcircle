@@ -1,0 +1,98 @@
+Ext.require([
+    'wowPortal.model.SMSLog'
+]);
+
+Ext.define('wowPortal.module.SMSLog', {
+    extend: 'wowPortal.module.Common',
+
+    initComponent: function() {
+        var store = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.SMSLog',
+            autoLoad: true,
+            remoteSort: true,
+            remoteFilter: true,
+            sorters: [{
+                property : 'time',
+                direction: 'ASC'
+            }],
+            proxy: {
+                directFn: wowPortal.wow_Services.cmdGetSMSLog,
+                type: 'direct',
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    //idProperty: 'fkey',
+                    totalProperty: 'total'
+                }
+            }
+        });
+
+        Ext.apply(this, {
+            items: [{
+                xtype: 'gridpanel',
+                store: store,
+                region: 'center',
+                loadMask: true,
+                columns: [{
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_PHONE,
+                    width: 100,
+                    dataIndex: 'phone',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_OPERATOR,
+                    width: 100,
+                    dataIndex: 'operator',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_SHORT_PHONE,
+                    width: 90,
+                    dataIndex: 'shortphone',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_MESSAGE,
+                    flex: 1,
+                    dataIndex: 'message',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_DATE,
+                    width: 100,
+                    dataIndex: 'date',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    text: wowPortal.locale.MODULE_SMS_LOG_HEADER_FROD,
+                    width: 50,
+                    dataIndex: 'frod',
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }],
+
+                plugins: [Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_SMS_LOG_EMPTY_MSG
+                },
+
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    store: store,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_SMS_LOG_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_SMS_LOG_EMPTY_MSG
+                })
+            }]
+        });
+
+        this.callParent(arguments);
+    }
+});

@@ -1,0 +1,14 @@
+/*
+ * Model: Commands
+ */
+
+Ext.define('wowPortal.model.Commands', {
+    extend: 'Ext.data.Model',
+    
+    fields: [
+        'time', 
+        'realm', 
+        'type', 
+        'string'
+    ]
+});

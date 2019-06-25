@@ -1,0 +1,335 @@
+/*
+ * Module: Commont market class
+ */
+
+Ext.require([
+//    'wowPortal.store.ItemCategories',
+//    'wowPortal.store.Items',
+    'wowPortal.model.ItemCategories',
+    'wowPortal.model.Items'
+]);
+
+Ext.define('wowPortal.module.CommonMarket', {
+    extend: 'wowPortal.module.Common',
+
+    models: ['wowPortal.model.ItemCategories', 'wowPortal.model.Items'],
+
+    minHeight: 600,
+
+    layout: {
+        type: 'hbox'//,
+        //align: 'stretchmax',
+    },
+    __itemCategoriesGrid: null,
+    __itemsGrid: null,
+
+    initComponent: function() {
+        this.__itemsStore = Ext.create('Ext.data.DirectStore', {
+            model: 'wowPortal.model.Items',
+            remoteFilter: true,
+            remoteSort: true,
+            autoLoad: false,
+            sorters: [{
+                property: 'name',
+                direction: 'ASC'
+            }],
+            pageSize: 50,
+            baseParams: {limit: 50},
+            buffered: true,
+            proxy: {
+                directFn: this.itemsListDirectFn,
+                type: 'direct',
+                baseParams: {limit: 50},
+                extraParams: {
+                    'class': 0,
+                    'subclass': null
+                },
+                reader: {
+                    reader: 'json',
+                    root: 'data',
+                    idProperty: 'entry',
+                    totalProperty: 'total'
+                }
+            },
+			listeners: {
+				load: function() {
+if (typeof $WWPower != 'undefined' && $WWPower)
+    $WWPower.onLoad();
+				},
+				scope: this
+			}
+        });
+
+        Ext.apply(this, {
+            items: [this.__itemCategoriesGrid = Ext.create('Ext.grid.GridPanel', {
+                loadMask: true,
+                minHeight: 400,
+                autoHeight: true,
+                store: {
+                    type: 'direct',
+                    model: wowPortal.model.ItemCategories,
+                    remoteSort: false,
+                    autoLoad: true,
+                    sorters: [{
+                        property: 'name',
+                        direction: 'ASC'
+                    }],
+                    directFn: this.categoriesListDirectFn
+                },
+                columns: [{
+                    dataIndex: 'id',
+                    width: 28,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        // TODO change to proper icon
+                        return '<img style="width:18px; height:18px;" src="/images/shop/' + value + '.png"/>';
+                    }
+                }, {
+                    dataIndex: 'name',
+                    flex: 1
+                }],
+                hideHeaders: true,
+                viewConfig: {
+                    stripeRows: true
+                },
+                listeners: {
+                    scope: this,
+                    selectionchange: function(view, records) {
+                        if (!Ext.isEmpty(records)) {
+                            this.__itemsGrid.getStore().getProxy().extraParams['class'] = records[0].getId();
+                            this.__pagingToolbar.moveFirst();
+                            this.__itemsHeaderFilters.clearFilters();
+                        }
+                    }
+                },
+                width: 200,
+                title: wowPortal.locale.MODULE_SALE_CATEGORIES_PANEL_TITLE,
+                region: 'west',
+                split: true
+            }), this.__itemsGrid = Ext.create('Ext.grid.GridPanel', {
+                loadMask: true,
+                title: wowPortal.locale.MODULE_SALE_ITEMS_PANEL_TITLE,
+                flex: 1,
+                minHeight: 400,
+                autoHeight: true,
+                region: 'center',
+                store: this.__itemsStore,
+                columns: [{
+                    dataIndex: 'entry',
+                    width: 60,
+                    align: 'right',
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_ID,
+                    filter: {
+                        xtype: 'numberfield',
+                        disableKeyFilter: true,
+                        minValue: 0
+                    }
+                }, {
+                    dataIndex: 'name',
+                    flex: 1,
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_NAME,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        return '<a href="' + wowPortal.locale.HELP_WOWHEAD + '/?item=' + record.get('entry') + '" target="_blank">' + value + '</a>';
+                    },
+                    filter: {
+                        xtype: 'textfield'
+                    }
+                }, {
+                    dataIndex: 'ItemLevel',
+                    width: 90,
+                    align: 'right',
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_ITEM_LEVEL,
+                    filter: {
+                        xtype: 'numberfield',
+                        disableKeyFilter: true,
+                        minValue: 0
+                    }
+                }, {
+                    dataIndex: 'RequiredLevel',
+                    width: 90,
+                    align: 'right',
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_REQUIRED_LEVEL,
+                    filter: {
+                        xtype: 'numberfield',
+                        disableKeyFilter: true,
+                        minValue: 0
+                    }
+                }, {
+                    dataIndex: 'fcount',
+                    hidden: this.isShop,
+                    hideable: !this.isShop,
+                    width: 80,
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_COUNT,
+                    filter: {
+                        xtype: 'numberfield',
+                        disableKeyFilter: true,
+                        minValue: 0
+                    }
+                }, {
+                    dataIndex: 'fprice',
+                    width: 90,
+                    text: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_COST,
+                    renderer: function(value, metaData, record, colIndex, store, view) {
+                        metaData.tdCls = 'cost-cell';
+                        return value;
+                    },                    
+                    filter: {
+                        xtype: 'numberfield',
+                        disableKeyFilter: true,
+                        minValue: 0
+                    }
+                }, {
+                    xtype:'actioncolumn',
+                    width: 30,
+                    align: 'center',
+                    hideable: false,
+                    sortable: false,
+                    items: [{
+                        icon: '/images/button/basket.png',
+                        tooltip: wowPortal.locale.MODULE_SALE_ITEMS_HEADER_BUY,
+                        scope: this,
+                        handler: function(grid, rowIndex, colIndex) {
+                            var record = grid.getStore().getAt(rowIndex);
+                            this.__showBuyDialog(record);
+                        }
+                    }]
+                }],
+
+                plugins: [this.__itemsHeaderFilters = Ext.create('Ext.ux.grid.plugin.HeaderFilters')],
+
+                viewConfig: {
+                    stripeRows: true,
+                    emptyText: wowPortal.locale.MODULE_SALE_ITEMS_PANEL_EMPTY_MSG,
+                    listeners: {
+                        scope: this,
+                        itemdblclick: this.__onRowDoubleClick
+                    }
+                },
+                // paging bar on the bottom
+                bbar: Ext.create('Ext.PagingToolbar', {
+                    itemId: 'pager',
+                    store: this.__itemsStore,
+                    displayInfo: true,
+                    displayMsg: wowPortal.locale.MODULE_SALE_ITEMS_PANEL_RANGE_MSG,
+                    emptyMsg: wowPortal.locale.MODULE_SALE_ITEMS_PANEL_EMPTY_MSG
+                })
+            })]
+        });
+
+        this.callParent(arguments);
+        this.__pagingToolbar = this.down('#pager');
+    },
+
+    __onRowDoubleClick: function(sm, record) {
+        this.__showBuyDialog(record);
+    },
+
+    __showBuyDialog: function(record) {
+        if (this.isSale)
+            this.__showBuyDialogForMe(record)
+        else
+            Ext.create('wowPortal.module.dialog.BuyFor', {parentWin: this, record: record}).show();
+    },
+    
+    __showBuyDialogForGift: function(record) {
+        var buyWindow = Ext.create('wowPortal.module.dialog.BuyGift', {
+            itemRecord: record,
+            callbackScope: this,
+            isShop: this.isShop,
+            callback: function(guid, count, subject, message) {
+                this.setLoading(true);
+                var self = this;
+
+                if (false && wowPortal.data.isMobileLocked) {
+                  Ext.create('wowPortal.module.DeleteCharacter', {
+
+                    deleteByEmail: function (win) {
+                      self.__buyForGift(guid, record.get('entry'), count, subject, message);
+                     },
+
+                     deleteBySms: function () {
+                       Ext.Msg.prompt(wowPortal.locale.MODULE_SMS_CONFIRM, wowPortal.locale.MODULE_SMS_CONFIRM_PHONE, function(btn, phone) {
+                               if (btn == 'ok') {
+                                 self.setLoading(false);
+                                       wowPortal.wow_Services.cmdBuyItemFromGifts({ charId: guid, itemId: record.get('entry'), count: count, subject: subject, message: message, phone: phone, by_sms: true },
+                                               function(response, provider){
+                                                 self.setLoading(false);
+                                                       if('exception' === provider.type || true !== response.success) {
+                                                         if (response)
+                                                              Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, response.msg);
+                                                       }
+                                                       if (response && response.success) {
+                                                               var win = Ext.create('wowPortal.module.dialog.MobileConfirm', {
+                                                                       callbackScope: self,
+                                                                       callback: function (code) {
+                                                                               wowPortal.wow_Services.cmdBuyItemFromGifts({ charId: guid, itemId: record.get('entry'), count: count, subject: subject, message: message, phone: phone, by_sms: true, mobileKey: code },
+                                                                                       function(response){
+                                                                                              self.setLoading(false);
+                                                                                              Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.data.serverType == 4 ? wowPortal.locale.MODULE_SALE_ITEMS_GIFT_SMS_PANDA_SUCCESS : wowPortal.locale.MODULE_SALE_ITEMS_GIFT_SMS_BUY_SUCCESS);
+                                                                                              self.__pagingToolbar.doRefresh();
+                                                                                       }
+                                                                               );
+                                                                       }
+                                                               });
+
+                                                               win.show();
+                                                       }
+                                               }, self
+                                       );
+                               }
+                       }, self);
+
+                     }
+                   }).show();
+                } else {
+                  self.__buyForGift(guid, record.get('entry'), count, subject, message);
+                }
+            }
+        }, this);
+
+        buyWindow.show();
+    },
+    
+    __showBuyDialogForMe: function(record) {
+        var buyWindow = Ext.create('wowPortal.module.dialog.BuyItem', {
+            itemRecord: record,
+            callbackScope: this,
+            isShop: this.isShop,
+            callback: function(guid, count) {
+                this.setLoading(true);
+                this.buyFirectFn({
+                    charId: guid,
+                    itemId: record.get('entry'),
+                    count: count
+                }, function(response, provider) {
+                     this.setLoading(false);
+                     if('exception' === provider.type || true !== response.success) {
+                         //Ext.Msg.alert(wowPortal.locale.COMMON_MESSAGE_ERROR, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_ERROR + (provider.message ? '<br/>' + provider.message : ''));
+                         return;
+                     } else {
+                         Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.locale.MODULE_SALE_ITEMS_BUY_BUY_SUCCESS);
+                         this.__pagingToolbar.doRefresh();
+                     }
+                }, this);
+            }
+        }, this);
+
+        buyWindow.show();
+    },
+    __buyForGift: function (guid, entry, count, subject, message) {
+      wowPortal.wow_Services.cmdBuyItemFromGifts({
+          charId: guid,
+          itemId: entry,
+          count: count,
+          subject: subject,
+          message: message
+      }, function(response, provider) {
+           this.setLoading(false);
+           if('exception' === provider.type || true !== response.success) {
+               return;
+           } else {
+               Ext.Msg.alert(wowPortal.locale.COMMON_CAPTION_MESSAGE, wowPortal.data.serverType == 4 ? wowPortal.locale.MODULE_SALE_ITEMS_GIFT_PANDA_SUCCESS : wowPortal.locale.MODULE_SALE_ITEMS_GIFT_BUY_SUCCESS);
+               this.__pagingToolbar.doRefresh();
+           }
+      }, this);
+    }
+});

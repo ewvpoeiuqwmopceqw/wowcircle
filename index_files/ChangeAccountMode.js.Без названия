@@ -1,0 +1,192 @@
+/*
+ * Dialog: Change account mode
+ */
+
+Ext.require([
+    'wowPortal.model.AccountModes'
+]);
+
+Ext.define('wowPortal.module.dialog.ChangeAccountMode', {
+    extend: 'Ext.Window',
+
+    models: ['wowPortal.model.AccountModes'],
+
+    width: 350,
+    autoHeight: true,
+    modal: true,
+    resizable: false,
+
+    title: wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_TITLE,
+
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [{
+                xtype: 'form',
+                itemId: 'form',
+                defaults: {
+                    labelWidth: 140
+                },
+                items: [{
+                    xtype: 'combobox',
+                    forceSelection: true,
+                    editable: false,
+                    anchor: '100%',
+                    itemId: 'mode',
+                    //value: parseInt(this.typeId),
+                    queryMode: 'local',
+                    displayField: 'name',
+                    valueField: 'id',
+                    allowBlank: false,
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_MODES_LABEL,
+                    store: {
+                        type: 'direct',
+                        model: 'wowPortal.model.AccountModes',
+                        remoteSort: false,
+                        autoLoad: true,
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }],
+                        directFn: wowPortal.wow_Services.cmdGetAccountModeList,
+                        listeners: {
+                            scope: this,
+                            beforeload: function(store, operation) {
+                                this.setLoading(true);
+                            },
+                            load: function(store, record, successfull) {
+                                /*var rec = this.__typeField.findRecordByDisplay(this.type);
+                                if (rec) {
+                                    this.__typeField.setValue(rec.get('id'));
+                                } else {
+                                    this.__typeField.setValue(this.__typeField.getStore().first().get('id'))
+                                }*/
+                                this.setLoading(false);
+                                this.__modeField.setValue(parseInt(this.modeId));
+                                this.__updateCost();
+                            }
+                        }
+                    },
+                    listeners: {
+                        scope: this, 
+                        change: this.__updateCost
+                    }
+                }, {
+                    xtype: 'datefield',
+                    anchor: '100%',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_FROM_LABEL,
+                    itemId: 'from',
+                    id: this.id + '-from',
+                    format: 'd.m.Y',
+                    vtype: 'daterange',
+                    endDateField: this.id + '-to',
+                    allowBlank: false,
+                    readOnly: true,
+                    listeners: {
+                        scope: this, 
+                        change: this.__updateCost
+                    }
+                }, {
+                    xtype: 'datefield',
+                    anchor: '100%',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_TO_LABEL,
+                    itemId: 'to',
+                    id: this.id + '-to',
+                    format: 'd.m.Y',
+                    vtype: 'daterange',
+                    startDateField: this.id + '-from',
+                    allowBlank: false,
+                    readOnly: false,
+                    listeners: {
+                        scope: this, 
+                        change: this.__updateCost
+                    }
+                }, {
+                    xtype: 'displayfield',
+                    anchor: '100%',
+                    fieldLabel: wowPortal.locale.MODULE_MANAGE_ACCOUNT_CHANGE_MODE_COST_LABEL,
+                    itemId: 'cost',
+                    value: '-'
+                }, {
+                    xtype: 'button',
+                    scope: this,
+                    text: wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TITLE,
+                    handler: function(button) {
+                        this.__showSetModeManual();
+                    }
+                }],
+                listeners: {
+                    scope: this,
+                    validitychange: function(form, valid, eOpts) {
+                        this.__okButton.setDisabled(!valid);
+                    }
+                }
+            }], 
+            buttons: [{
+                itemId: 'ok',
+                text: wowPortal.locale.COMMON_BUTTON_OK,
+                scope: this,
+                disabled: true,
+                handler: function() {
+                    var id = this.__modeField.getValue();
+                    var rec = this.__modeField.findRecordByValue(id);
+                    var from = this.__fromField.getValue();
+                    var to = this.__toField.getValue();
+                    var duration = (to.getTime() - from.getTime()) / 86400000; // (60 * 60*24 * 1000) - ?????????? ? ???
+                    this.callback.call(this.callbackScope|| window, id, from.getTime() / 1000, duration);
+                    this.close();
+                }
+            }, {
+                text: wowPortal.locale.COMMON_BUTTON_CANCEL,
+                scope: this,
+                handler: function() {
+                    this.close();
+                }
+            }]
+        });
+
+        this.callParent(arguments);
+        this.__form = this.items.get('form');
+        this.__okButton = this.down('#ok');
+
+        this.__modeField = this.down('#mode');
+        this.__fromField = this.down('#from');
+        this.__toField = this.down('#to');
+        this.__costField = this.down('#cost');
+        this.on('afterrender', this.__onAfterRender);
+    },
+    
+    __showSetModeManual: function() {
+        Ext.create('Ext.window.Window', {
+            title: wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TITLE,
+            modal: true,
+            height: 300,
+            width: 550,
+            layout: 'fit',
+            html: wowPortal.locale.MAIN_PAGE_SETMODE_MANUAL_TEXT
+        }).show();
+    },
+    
+    __onAfterRender: function() {
+        var now = new Date();
+        this.__fromField.setMinValue(now);
+        this.__fromField.setValue(now);
+        this.__toField.setMinValue(now);
+        this.__toField.setValue(new Date(now.getFullYear(), now.getMonth(), now.getDate()+1,0,0,0,0));
+        this.__updateCost();
+        this.setLoading(true);
+    }, 
+    
+    __updateCost: function() {
+        var id = this.__modeField.getValue();
+        var rec = this.__modeField.findRecordByValue(id);
+        var from = this.__fromField.getValue();
+        var to = this.__toField.getValue();
+        if (!rec || !from || !to) {
+            return;
+        }
+        var duration = (to.getTime() - from.getTime()) / 86400000; // (60 * 60*24 * 1000) - ?????????? ? ???        
+        var cost = duration * rec.get('cost');
+        if(cost<0) cost = 0;
+        this.__costField.setValue(cost);
+    }
+});

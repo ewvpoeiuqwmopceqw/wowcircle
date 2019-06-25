@@ -1,0 +1,14 @@
+/*
+ * Model: Item Categories
+ */
+
+Ext.define('wowPortal.model.ItemCategories', {
+    extend: 'Ext.data.Model',
+
+    fields: [
+        'id',
+        'icon',
+        'name',
+        'descr'
+    ]
+});
